@@ -7,7 +7,7 @@ const getLinkedinProfileDetails = async (profileUrl) => {
       // slowMo: (process.env.PRODUCTION) ? 0 : 1000, // Delay the actions in dev mode, so we can better debug it
       headless: true,
       userDataDir: "./user_data", // The directory we store user data, like cookies and session data. So Puppeteer can maintain session upon restart
-      args: ['--no-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
     })
 
     const page = await browser.newPage()
