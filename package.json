@@ -11,11 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "puppeteer": "^1.11.0",
+    "dotenv": "^6.2.0",
     "express": "^4.16.4"
   },
   "devDependencies": {
-    "dotenv": "^6.2.0",
-    "nodemon": "^1.18.9",
-    "puppeteer": "^1.11.0"
+    "nodemon": "^1.18.9"
   }
 }
