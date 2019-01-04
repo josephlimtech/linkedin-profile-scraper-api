@@ -6,11 +6,17 @@ const getLinkedinProfileDetails = async (profileUrl) => {
     const browser = await puppeteer.launch({
       // slowMo: (process.env.PRODUCTION) ? 0 : 1000, // Delay the actions in dev mode, so we can better debug it
       headless: true,
-      userDataDir: "./user_data", // The directory we store user data, like cookies and session data. So Puppeteer can maintain session upon restart
+      // userDataDir: "./user_data", // The directory we store user data, like cookies and session data. So Puppeteer can maintain session upon restart
       args: ['--no-sandbox', '--disable-setuid-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
     })
 
     const page = await browser.newPage()
+
+    await page.setCookie({
+      'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
+      'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
+      'domain': '.www.linkedin.com'
+    })
 
     console.log('Browsing to LinkedIn.com in the background using a headless browser...')
 
@@ -21,22 +27,22 @@ const getLinkedinProfileDetails = async (profileUrl) => {
     // TODO: check if needed selectors are present on the page
 
     // Check if the login form is present, if so, we are not logged in
-    const isNotLoggedIn = await page.$('#login-email') !== null
+    // const isNotLoggedIn = await page.$('#login-email') !== null
 
-    // Check if we need to login
-    if (isNotLoggedIn) {
-        console.log('Logging in with the credentials...')
+    // // Check if we need to login
+    // if (isNotLoggedIn) {
+    //     console.log('Logging in with the credentials...')
 
-        await page.type('#login-email', process.env.LINKEDIN_LOGIN_EMAIL);
-        await page.type('#login-password', process.env.LINKEDIN_LOGIN_PASSWORD);
+    //     await page.type('#login-email', process.env.LINKEDIN_LOGIN_EMAIL);
+    //     await page.type('#login-password', process.env.LINKEDIN_LOGIN_PASSWORD);
 
-        await Promise.all([
-            await page.click('#login-submit'),
-            await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
-        ]);
+    //     await Promise.all([
+    //         await page.click('#login-submit'),
+    //         await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
+    //     ]);
 
-        console.log('Logged in!');
-    }
+    //     console.log('Logged in!');
+    // }
 
     console.log('Navigating to LinkedIn profile...');
 
