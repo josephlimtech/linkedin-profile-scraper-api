@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "./node_modules/nodemon/bin/nodemon.js ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.16.4"
+  },
   "devDependencies": {
     "dotenv": "^6.2.0",
+    "nodemon": "^1.18.9",
     "puppeteer": "^1.11.0"
   }
 }
