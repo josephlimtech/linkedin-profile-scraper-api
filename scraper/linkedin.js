@@ -5,7 +5,7 @@ const getLinkedinProfileDetails = async (profileUrl) => {
 
     const browser = await puppeteer.launch({
       // slowMo: (process.env.PRODUCTION) ? 0 : 1000, // Delay the actions in dev mode, so we can better debug it
-      headless: false,
+      headless: true,
       userDataDir: "./user_data" // The directory we store user data, like cookies and session data. So Puppeteer can maintain session upon restart
     })
 
