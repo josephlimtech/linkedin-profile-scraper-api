@@ -1,63 +1,78 @@
 require('dotenv').config()
 const puppeteer = require('puppeteer');
 
-const getLinkedinProfileDetails = async (profileUrl) => {
+const setupScraper = async () => {
+  console.log(`Setup scraper: Launching puppeteer in the background...`)
 
-    const browser = await puppeteer.launch({
-      // slowMo: (process.env.PRODUCTION) ? 0 : 1000, // Delay the actions in dev mode, so we can better debug it
-      headless: true,
-      // userDataDir: "./user_data", // The directory we store user data, like cookies and session data. So Puppeteer can maintain session upon restart
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
-    })
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
+  })
 
-    const page = await browser.newPage()
+  console.log(`Setup scraper: Puppeteer launched!`)
 
-    await page.setCookie({
-      'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
-      'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
-      'domain': '.www.linkedin.com'
-    })
+  const page = await browser.newPage()
+  await page.setViewport({width: 1200, height: 720})
 
-    console.log('Browsing to LinkedIn.com in the background using a headless browser...')
+  console.log(`Setup scraper: Setting session cookie...`)
 
-    await page.setViewport({width: 1200, height: 720})
+  await page.setCookie({
+    'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
+    'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
+    'domain': '.www.linkedin.com'
+  })
 
-    await page.goto('https://www.linkedin.com/', { waitUntil: 'domcontentloaded' })
+  console.log(`Setup scraper: Session cookie set!`)
 
-    // TODO: check if needed selectors are present on the page
+  console.log('Setup scraper: Browsing to LinkedIn.com in the background using a headless browser...')
 
-    // Check if the login form is present, if so, we are not logged in
-    // const isNotLoggedIn = await page.$('#login-email') !== null
+  await page.goto('https://www.linkedin.com/', { waitUntil: 'domcontentloaded' })
 
-    // // Check if we need to login
-    // if (isNotLoggedIn) {
-    //     console.log('Logging in with the credentials...')
+  console.log(`Setup scraper: Checking if we are logged in successfully...`)
 
-    //     await page.type('#login-email', process.env.LINKEDIN_LOGIN_EMAIL);
-    //     await page.type('#login-password', process.env.LINKEDIN_LOGIN_PASSWORD);
+  const isLoggedIn = await checkIfLoggedIn(page);
 
-    //     await Promise.all([
-    //         await page.click('#login-submit'),
-    //         await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
-    //     ]);
+  if (isLoggedIn) {
+    console.log(`Setup scraper: Done!`)
+    return {
+      page,
+      browser
+    }
+  } else {
+    throw new Error('Scraper not logged in into LinkedIn')
+  }
+};
 
-    //     console.log('Logged in!');
-    // }
+const checkIfLoggedIn = async (page) => {
+  console.log('Scraper: Check if we are still logged in...')
+  const isLoggedIn = await page.$('#login-email') === null
 
-    console.log('Navigating to LinkedIn profile...');
+  if (isLoggedIn) {
+    console.log('Scraper: All good. We are still logged in.')
+  } else {
+    console.log('Scraper: Bad news. We are not logged in. Session is expired or our check to see if we are loggedin is not correct anymore.')
+  }
+  return isLoggedIn
+};
+
+const getLinkedinProfileDetails = async (page, profileUrl) => {
+
+  const scraperSessionId = new Date().getTime();
+
+    console.log(`Scraper (${scraperSessionId}): Navigating to LinkedIn profile...`);
 
     await page.goto(profileUrl, { waitUntil: 'domcontentloaded' });
 
-    console.log('LinkedIn profile page loaded!');
+    console.log(`Scraper (${scraperSessionId}): LinkedIn profile page loaded!`);
 
     // TODO: first check if the needed selectors are present on the page, or else we need to update it in this script
     // TODO: notifier should be build if LinkedIn changes their selectors
 
-    console.log('Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...');
+    console.log(`Scraper (${scraperSessionId}): Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...`);
 
     await autoScroll(page);
 
-    console.log('Parsing data...');
+    console.log(`Scraper (${scraperSessionId}): Parsing data...`);
 
     // Only click the expanding buttons when they exist
     const expandButtonsSelectors = [
@@ -69,7 +84,7 @@ const getLinkedinProfileDetails = async (profileUrl) => {
 
     for (const buttonSelector of expandButtonsSelectors) {
         if (await page.$(buttonSelector) !== null) {
-            console.log(`Click ${buttonSelector}`)
+            console.log(`Scraper (${scraperSessionId}): Click ${buttonSelector}`)
             await page.click(buttonSelector);
         };
     };
@@ -104,10 +119,10 @@ const getLinkedinProfileDetails = async (profileUrl) => {
         }
     });
 
-    console.log('User:');
-    console.log(userProfile);
+    console.log(`Scraper (${scraperSessionId}): User:`);
+    console.log(`Scraper (${scraperSessionId}): `, userProfile);
 
-    console.log('Parsing experiences data...');
+    console.log(`Scraper (${scraperSessionId}): Parsing experiences data...`);
 
     const experiences = await page.$$eval('#experience-section ul > .ember-view', nodes => {
         // Note: the $$eval context is the browser context.
@@ -133,8 +148,8 @@ const getLinkedinProfileDetails = async (profileUrl) => {
         })
     });
 
-    console.log('Got experiences data:');
-    console.log(experiences);
+    console.log(`Scraper (${scraperSessionId}): Got experiences data:`);
+    console.log(`Scraper (${scraperSessionId}): `, experiences);
 
     const education = await page.$$eval('#education-section ul > .ember-view', nodes => {
         // Note: the $$eval context is the browser context.
@@ -159,8 +174,8 @@ const getLinkedinProfileDetails = async (profileUrl) => {
         })
     });
 
-    console.log('Got education data:');
-    console.log(education);
+    console.log(`Scraper (${scraperSessionId}): Got education data:`);
+    console.log(`Scraper (${scraperSessionId}): `, education);
 
     const skills = await page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
         // Note: the $$eval context is the browser context.
@@ -177,14 +192,14 @@ const getLinkedinProfileDetails = async (profileUrl) => {
         })
     });
 
-    console.log('Got skills data:');
-    console.log(skills);
+    console.log(`Scraper (${scraperSessionId}): Got skills data:`);
+    console.log(`Scraper (${scraperSessionId}): `, skills);
 
 
 
-    console.log('WE ARE DONE! GOODBYE!');
+    console.log(`Scraper (${scraperSessionId}): Done! Returned profile details for: ${profileUrl}`);
 
-    await browser.close();
+    // await browser.close();
 
     return {
         userProfile,
@@ -218,4 +233,4 @@ async function autoScroll(page){
     });
 }
 
-module.exports = { getLinkedinProfileDetails }
+module.exports = { setupScraper, getLinkedinProfileDetails, checkIfLoggedIn }
