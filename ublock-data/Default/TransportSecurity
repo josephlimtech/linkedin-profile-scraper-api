@@ -1,0 +1,26 @@
+{
+   "8/RrMmQlCD2Gsp14wUCE1P8r7B2C5+yE0+g79IPyRsc=": {
+      "expiry": 1578732121.95578,
+      "mode": "force-https",
+      "sts_include_subdomains": false,
+      "sts_observed": 1547196121.955782
+   },
+   "LAZkYS46RVRcFiZAzmUJrz6TJHBd4nwE6VxPWfPLYHs=": {
+      "expiry": 1558082066.969058,
+      "mode": "force-https",
+      "sts_include_subdomains": true,
+      "sts_observed": 1547195666.969073
+   },
+   "tXjOdUMSBgtiUbrbGkl6XP80fiDB8uXOkUbnCf0IKvw=": {
+      "expect_ct": {
+         "expect_ct_enforce": false,
+         "expect_ct_expiry": 1547282564.198585,
+         "expect_ct_observed": 1547196164.198585,
+         "expect_ct_report_uri": "https://www.linkedin.com/platform-telemetry/ct"
+      },
+      "expiry": 1549788164.198571,
+      "mode": "force-https",
+      "sts_include_subdomains": false,
+      "sts_observed": 1547196164.198574
+   }
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Does not work well:
+     <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<link rel="stylesheet" href="css/fa-icons.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/logger-ui.css">
+<link rel="stylesheet" type="text/css" href="css/logger-ui-inspector.css">
+<link rel="shortcut icon" type="image/png" href="img/icon_16.png">
+<title data-i18n="statsPageName"></title>
+</head>
+<body>
+
+<div class="permatoolbar">
+    <select id="pageSelector">
+        <option value="" data-i18n="logAll">
+        <option value="tab_bts" data-i18n="logBehindTheScene">
+        <option value="tab_active" data-i18n="loggerCurrentTab">
+    </select>
+    <span id="refresh" class="button fa-icon disabled needdom" data-i18n-title="loggerReloadTip">refresh</span>
+    <span id="showdom" class="button fa-icon disabled needdom" data-i18n-title="loggerDomInspectorTip">code</span>
+    <span id="showpopup" class="button ubo-icon disabled needdom" data-i18n-title="loggerPopupPanelTip"><svg><use href="/img/ublock-defs.svg#ubo-solid"></use></svg></span>
+    <a id="info" class="button fa-icon" href="https://github.com/gorhill/uBlock/wiki/The-logger" target="_blank" data-i18n-title="loggerInfoTip">info-circle</a>
+</div>
+
+<div id="inspectors">
+    <div id="domInspector" class="inspector vCompact hCompact">
+        <div class="permatoolbar">
+            <div>
+                <span class="button fa-icon vCompactToggler">double-angle-up</span>
+                <span class="button fa-icon hCompactToggler">double-angle-left</span>
+                <!-- <span class="button fa highlightMode" style="display: none">&#xf042;</span> -->
+                <span class="button fa-icon revert disabled">eraser</span>
+                <span class="button fa-icon commit disabled">floppy-o</span>
+            </div>
+        </div>
+        <div class="vscrollable">
+            <ul id="domTree"></ul>
+        </div>
+    </div>
+    <div id="netInspector" class="inspector vCompact f">
+        <div class="permatoolbar">
+            <span class="button fa-icon vCompactToggler">double-angle-up</span>
+            <span id="clean" class="button fa-icon disabled">times</span>
+            <span id="clear" class="button fa-icon disabled" data-i18n-title="loggerClearTip">eraser</span>
+            <span id="pause"><span class="button fa-icon" data-i18n-title="loggerPauseTip">pause-circle-o</span><span class="button fa-icon" data-i18n-title="loggerUnpauseTip">play-circle-o</span></span>
+            <span id="filterExprGroup">
+                <span id="filterButton" class="button fa-icon" data-i18n-title="loggerRowFiltererButtonTip">filter</span>
+                <span id="filterInput">
+                    <input type="text" placeholder="logFilterPrompt">
+                    <span id="filterExprButton" class="button fa-icon expanded" data-i18n-title="loggerRowFiltererBuiltinTip">angle-up</span>
+                    <div id="filterExprPicker">
+                        <div><span data-filtex="!" data-i18n="loggerRowFiltererBuiltinNot"></span><span data-filtex="^--$|^<<$|^##" data-i18n="loggerRowFiltererBuiltinBlocked"></span><span data-filtex="^\+\+$|^\*\*$|^#@#" data-i18n="loggerRowFiltererBuiltinAllowed"></span></div>
+                        <div><span data-filtex="!" data-i18n="loggerRowFiltererBuiltinNot"></span><span data-filtex="^(?:css|font)$">css/font</span><span data-filtex="^image$">image</span><span data-filtex="^(?:inline-)?script(?:ing)?$">script</span><span data-filtex="^(?:websocket|xhr)$">xhr</span><span data-filtex="^frame$">frame</span><span data-filtex="^dom$">dom</span></div>
+                        <div><span data-filtex="!" data-i18n="loggerRowFiltererBuiltinNot"></span><span data-filtex="^1$" data-i18n="loggerRowFiltererBuiltin1p"></span><span data-filtex="^3(?:,\d)?$" data-i18n="loggerRowFiltererBuiltin3p"></span></div>
+                    </div>
+                </span>
+            </span>
+            <input id="maxEntries" type="text" size="5" data-i18n-title="logMaxEntriesTip">
+        </div>
+        <div class="vscrollable">
+            <style id="tabFilterer"></style>
+            <table>
+                <colgroup><col><col><col><col><col><col></colgroup>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <iframe id="popupContainer" class="hide"></iframe>
+</div>
+
+<div id="templates" style="display: none;">
+    <div id="renderedURLTemplate"><span><span></span><b></b><span></span></span></div>
+    <div id="netFilteringDialog" class="modalDialog">
+        <div class="dialog">
+            <div class="hide preview"></div>
+            <div class="headers">
+                <span class="header dynamic selected" data-container="dynamic" data-i18n="loggerURLFilteringHeader"></span>
+                <span class="header static" data-container="static" data-i18n="loggerStaticFilteringHeader"></span>
+                <span class="tools"><span class="fa-icon reload">refresh</span>&ensp;<span class="fa-icon picker">eye-dropper</span></span>
+            </div>
+            <div class="containers">
+                <div class="container dynamic selected">
+                    <table class="toolbar">
+                        <colgroup><col><col></colgroup>
+                        <tbody>
+                        <tr>
+                            <td><span id="saveRules" class="fa-icon">lock</span>
+                            <td><p>
+                                <label><span data-i18n="loggerURLFilteringContextLabel"></span> <select class="dynamic origin"></select></label>&emsp;
+                                <label><span data-i18n="loggerURLFilteringTypeLabel"></span> <select class="dynamic type"><option><option value="*">*</select></label>
+                                </p>
+                        <tr class="entry">
+                            <td><div class="action"><span class="allow">&nbsp;</span><span class="noop">&nbsp;</span><span class="block">&nbsp;</span></div>
+                            <td class="url">
+                        </tbody>
+                    </table>
+                    <table class="entries">
+                        <colgroup><col><col></colgroup>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="container static">
+                    <p></p>
+                    <p><textarea class="staticFilter" spellcheck="false" value=""></textarea>
+                       <button id="createStaticFilter" class="custom important" type="button" data-i18n="pickerCreate"></button>
+                   </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="filterFinderDialog" class="modalDialog">
+        <div class="dialog"></div>
+    </div>
+    <ul id="filterFinderListEntry">
+        <li class="filterFinderListEntry">
+            <a href="asset-viewer.html?url=" target="_blank"></a>
+            <a href="" class="fa-icon" target="_blank">home</a></li>
+    </ul>
+    <div id="cosmeticFilteringDialog" class="modalDialog">
+        <div class="dialog">
+            <textarea class="cosmeticFilters" value=""></textarea>
+            <button id="createCosmeticFilters" class="custom important" type="button" data-i18n="pickerCreate"></button>
+        </div>
+    </div>
+</div>
+
+<script src="js/fa-icons.js"></script>
+<script src="js/vapi.js"></script>
+<script src="js/vapi-common.js"></script>
+<script src="js/vapi-client.js"></script>
+<script src="js/udom.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/logger-ui.js"></script>
+<script src="js/logger-ui-inspector.js"></script>
+
+</body>
+</html>
