@@ -40,10 +40,13 @@ console.log(`Server setup: Setting up...`);
       }
     })
   } catch (err) {
+    console.log('Error during setup')
+    console.log(err)
+
     app.get('/', async (req, res) => {
       res.json({
         message: 'An error occurred',
-        error: err
+        error: (err.message) ? err.message : null
       })
     })
   }

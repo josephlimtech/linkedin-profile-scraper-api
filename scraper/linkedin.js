@@ -6,73 +6,77 @@ global.appRoot = path.resolve(__dirname + '../../');
 const blockedResources = ['image', 'stylesheet', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
 
 const setupScraper = async () => {
-  console.log(`Scraper setup: Launching puppeteer in the background...`)
+  try {
+    console.log(`Scraper setup: Launching puppeteer in the background...`)
 
-  // const ext = global.appRoot + '/ublock-chromium'
-  // const datadir = global.appRoot + '/ublock-data'
+    // const ext = global.appRoot + '/ublock-chromium'
+    // const datadir = global.appRoot + '/ublock-data'
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    // userDataDir: datadir,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      "--proxy-server='direct://",
-      '--proxy-bypass-list=*',
-      // `--load-extension=${ext}`,
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--disable-gpu',]
-    // '--no-sandbox', '--disable-setuid-sandbox' -> For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
-    // "--proxy-server='direct://'", '--proxy-bypass-list=*' -> For speed improvements: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-424357709
-  })
+    const browser = await puppeteer.launch({
+      headless: true,
+      // userDataDir: datadir,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        "--proxy-server='direct://",
+        '--proxy-bypass-list=*',
+        // `--load-extension=${ext}`,
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',]
+      // '--no-sandbox', '--disable-setuid-sandbox' -> For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
+      // "--proxy-server='direct://'", '--proxy-bypass-list=*' -> For speed improvements: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-424357709
+    })
 
-  console.log(`Scraper setup: Puppeteer launched!`)
+    console.log(`Scraper setup: Puppeteer launched!`)
 
-  const page = await browser.newPage()
+    const page = await browser.newPage()
 
-  // Block loading of images, we dont need that
-  await page.setRequestInterception(true);
+    // Block loading of images, we dont need that
+    await page.setRequestInterception(true);
 
-  page.on('request', (req) => {
-    if(blockedResources.includes(req.resourceType())) {
-      req.abort();
+    page.on('request', (req) => {
+      if(blockedResources.includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36')
+
+    await page.setViewport({width: 1200, height: 720})
+
+    console.log(`Scraper setup: Setting session cookie...`)
+
+    await page.setCookie({
+      'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
+      'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
+      'domain': '.www.linkedin.com'
+    })
+
+    console.log(`Scraper setup: Session cookie set!`)
+
+    console.log('Scraper setup: Browsing to LinkedIn.com in the background using a headless browser...')
+
+    await page.goto('https://www.linkedin.com/', { waitUntil: 'domcontentloaded' })
+
+    console.log(`Scraper setup: Checking if we are logged in successfully...`)
+
+    const isLoggedIn = await checkIfLoggedIn(page);
+
+    if (isLoggedIn) {
+      console.log(`Scraper setup: Done!`)
+      return {
+        page,
+        browser
+      }
     } else {
-      req.continue();
+      return new Error('Scraper not logged in into LinkedIn')
     }
-  });
-
-  // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
-  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36')
-
-  await page.setViewport({width: 1200, height: 720})
-
-  console.log(`Scraper setup: Setting session cookie...`)
-
-  await page.setCookie({
-    'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
-    'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
-    'domain': '.www.linkedin.com'
-  })
-
-  console.log(`Scraper setup: Session cookie set!`)
-
-  console.log('Scraper setup: Browsing to LinkedIn.com in the background using a headless browser...')
-
-  await page.goto('https://www.linkedin.com/', { waitUntil: 'domcontentloaded' })
-
-  console.log(`Scraper setup: Checking if we are logged in successfully...`)
-
-  const isLoggedIn = await checkIfLoggedIn(page);
-
-  if (isLoggedIn) {
-    console.log(`Scraper setup: Done!`)
-    return {
-      page,
-      browser
-    }
-  } else {
-    throw new Error('Scraper not logged in into LinkedIn')
+  } catch (err) {
+    throw new Error(err)
   }
 };
 
@@ -251,7 +255,7 @@ async function autoScroll(page){
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
             var totalHeight = 0;
-            var distance = 200;
+            var distance = 500;
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
