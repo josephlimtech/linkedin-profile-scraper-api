@@ -12,7 +12,7 @@ const setupScraper = async () => {
   // const datadir = global.appRoot + '/ublock-data'
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     // userDataDir: datadir,
     args: [
       '--no-sandbox',
