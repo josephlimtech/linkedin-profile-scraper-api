@@ -1,0 +1,76 @@
+# List of resources imported as "web accessible resources".
+#
+# To ensure valid filename characters on any platform OS, the filenames are
+# constructed using the md5 hash of the respective tokens.
+#
+# The list below was generated using the Python script located at:
+# https://github.com/gorhill/uBlock/blob/master/tools/import-war.py
+#
+# DO NOT REMOVE THIS LINE >>>>>
+
+1x1-transparent.gif
+	22e03f0a589e9c48b3916f91090da76a.gif
+2x2-transparent.png
+	c77d1c55bb336440de0677e841870dd2.png
+3x2-transparent.png
+	08bccca4f0b22bca18001da690ef0f6b.png
+32x32-transparent.png
+	70a7e8510b6031f0d7d6dbf4a6e70c3e.png
+nooptext
+	7e270994feadd29c8f6cfe846ab7769c.txt
+noopjs
+	b71d4af3b115e6d5b5b02c18f901e313.js
+noopframe
+	e1cb8d0e96fd55057c8e7a4948c0e704.html
+noopmp3-0.1s
+	649775b1644161f11f034be886082fac.mp3
+noopmp4-1s
+	7f7127b0b406fcd719b081372b7ce451.mp4
+hd-main.js
+	bed5a2e0e77ce019b181b365896fd84f.js
+fuckadblock.js-3.2.0
+	b2cc2af4a6c9cac1992c377747d98036.js
+antiAdBlock.js
+	c2e1fb0f4c1450d9be9884c583747d83.js
+google-analytics.com/ga.js
+	c2c7eb5240aa19439b7ebbf38d6789e5.js
+google-analytics.com/analytics.js
+	59fb24a2d12455d15bea20980e8a6801.js
+google-analytics.com/inpage_linkid.js
+	acc6e24fce1dcf79ba6a698dc09b0d99.js
+google-analytics.com/cx/api.js
+	bf451d42525251f69895201650a9c1ea.js
+googletagservices.com/gpt.js
+	f1df24e1f123b1137cec098dab038b34.js
+googletagmanager.com/gtm.js
+	9146d832a0025daf20ec16a48b909c81.js
+googlesyndication.com/adsbygoogle.js
+	add5ec8fb7834916ff54b56578dc07c4.js
+ligatus.com/*/angular-tag.js
+	59abf2914ae612c22ca7faecfa5d19e9.js
+scorecardresearch.com/beacon.js
+	4bf7b393d3b1b313682eed660b3f79f6.js
+widgets.outbrain.com/outbrain.js
+	f6f25816c1c5ce3d465f4cd083539931.js
+doubleclick.net/instream/ad_status.js
+	2b73c2782126b83faf6ba7d4b30919b5.js
+addthis.com/addthis_widget.js
+	af3c919ee9a3d97f5dedaf2f8bec146a.js
+disqus.com/forums/*/embed.js
+	52cd82bf4163cf85a2e578f33f3a1c5b.js
+disqus.com/embed.js
+	f97120ae9a642fea9bf2dc61b0dac5c3.js
+amazon-adsystem.com/aax2/amzn_ads.js
+	d363525161c56887ceebe5e72ed4ef31.js
+silent-noeval.js
+	cb5ec55f9d28a46c647c9aa7c48fd158.js
+popads.net.js
+	c3f690ad3b4d5a1b308d1461a9978749.js
+popads-dummy.js
+	b4fa32e8497f63fd2ca54c1fdae6d273.js
+d3pkae9owd2lcf.cloudfront.net/mb105.js
+	8f846d6d2abbdbb39219191e407f6cce.js
+static.chartbeat.com/chartbeat.js
+	049ba9cad461c1d73512654fa0505f24.js
+ampproject.org/v0.js
+	f643260136b645d95fdc78fc46e9d00a.js

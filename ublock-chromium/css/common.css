@@ -1,0 +1,109 @@
+@font-face {
+    font-family: 'FontAwesome';
+    font-weight: normal;
+    font-style: normal;
+    src: url('fonts/fontawesome-webfont.ttf') format('truetype');
+    }
+.fa {
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+    }
+body {
+    background-color: white;
+    color: black;
+    font: 14px sans-serif;
+    }
+code {
+    background-color: #eee;
+    padding: 0 0.25em;
+    }
+textarea {
+    font-size: 90%;
+    }
+/* I designed the button with: http://charliepark.org/bootstrap_buttons/ */
+button.custom {
+    padding: 0.6em 1em;
+    border: 1px solid transparent;
+    border-color: #ccc #ccc #bbb #bbb;
+    border-radius: 3px;
+    background-color: hsl(216, 0%, 75%);
+    background-image: linear-gradient(#f2f2f2, #dddddd);
+    background-repeat: repeat-x;
+    color: #000;
+    opacity: 0.8;
+    }
+button.custom:hover {
+    opacity: 1.0;
+    }
+button.custom.important {
+    border-color: #ffcc7f #ffcc7f hsl(36, 100%, 73%);
+    background-color: hsl(36, 100%, 75%);
+    background-image: linear-gradient(#ffdca8, #ffcc7f);
+    }
+button.custom.disabled,
+button.custom[disabled],
+button.custom.important.disabled,
+button.custom.important[disabled] {
+    border-color: #ddd #ddd hsl(36, 0%, 85%);
+    background-color: hsl(36, 0%, 72%);
+    background-image: linear-gradient(#f2f2f2, #dddddd);
+    color: #666;
+    opacity: 0.6;
+    pointer-events: none;
+    }
+button.custom.iconifiable > .fa {
+    padding-right: 0.5em;
+    }
+body[dir="rtl"] button.custom.iconifiable > .fa {
+    padding-left: 0.5em;
+    }
+.hidden {
+    display: none;
+    height: 0;
+    visibility: hidden;
+    width: 0;
+    }
+
+@media (max-width: 640px) {
+    button.custom.iconifiable > .fa {
+        font-size: 150%;
+        padding: 0;
+        }
+    button.custom.iconifiable > [data-i18n] {
+        display: none;
+        }
+    }
+
+.ubo-icon {
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    display: inline-flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0.1em;
+    position: relative;
+    }
+.ubo-icon > * {
+    pointer-events: none;
+    }
+.ubo-icon.disabled,
+.disabled > .ubo-icon,
+.ubo-icon[disabled],
+[disabled] > .ubo-icon {
+    color: #000;
+    fill: #000;
+    opacity: 0.25;
+    stroke: #888;
+    pointer-events: none;
+    }
+.ubo-icon > svg {
+    height: 1em;
+    width: 1em;
+    }
