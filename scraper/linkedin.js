@@ -8,8 +8,8 @@ const blockedResources = ['image', 'stylesheet', 'media', 'font', 'texttrack', '
 const setupScraper = async () => {
   console.log(`Scraper setup: Launching puppeteer in the background...`)
 
-  const ext = global.appRoot + '/ublock-chromium'
-  const datadir = global.appRoot + '/ublock-data'
+  // const ext = global.appRoot + '/ublock-chromium'
+  // const datadir = global.appRoot + '/ublock-data'
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -19,7 +19,7 @@ const setupScraper = async () => {
       '--disable-setuid-sandbox',
       "--proxy-server='direct://",
       '--proxy-bypass-list=*',
-      `--load-extension=${ext}`,
+      // `--load-extension=${ext}`,
       '--disable-dev-shm-usage',
       '--disable-accelerated-2d-canvas',
       '--disable-gpu',]
