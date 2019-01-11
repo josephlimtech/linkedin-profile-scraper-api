@@ -13,7 +13,7 @@ const setupScraper = async () => {
 
   const browser = await puppeteer.launch({
     headless: false,
-    userDataDir: datadir,
+    // userDataDir: datadir,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
