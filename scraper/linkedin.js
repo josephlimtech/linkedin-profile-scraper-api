@@ -2,19 +2,19 @@ require('dotenv').config()
 const puppeteer = require('puppeteer');
 
 const setupScraper = async () => {
-  console.log(`Setup scraper: Launching puppeteer in the background...`)
+  console.log(`Scraper setup: Launching puppeteer in the background...`)
 
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'] // For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
   })
 
-  console.log(`Setup scraper: Puppeteer launched!`)
+  console.log(`Scraper setup: Puppeteer launched!`)
 
   const page = await browser.newPage()
   await page.setViewport({width: 1200, height: 720})
 
-  console.log(`Setup scraper: Setting session cookie...`)
+  console.log(`Scraper setup: Setting session cookie...`)
 
   await page.setCookie({
     'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
@@ -22,18 +22,18 @@ const setupScraper = async () => {
     'domain': '.www.linkedin.com'
   })
 
-  console.log(`Setup scraper: Session cookie set!`)
+  console.log(`Scraper setup: Session cookie set!`)
 
-  console.log('Setup scraper: Browsing to LinkedIn.com in the background using a headless browser...')
+  console.log('Scraper setup: Browsing to LinkedIn.com in the background using a headless browser...')
 
   await page.goto('https://www.linkedin.com/', { waitUntil: 'domcontentloaded' })
 
-  console.log(`Setup scraper: Checking if we are logged in successfully...`)
+  console.log(`Scraper setup: Checking if we are logged in successfully...`)
 
   const isLoggedIn = await checkIfLoggedIn(page);
 
   if (isLoggedIn) {
-    console.log(`Setup scraper: Done!`)
+    console.log(`Scraper setup: Done!`)
     return {
       page,
       browser
