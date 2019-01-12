@@ -2,21 +2,17 @@
 LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format.
 
 ## Getting started
-In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie.
-
-I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles.
-
-### About using the session cookie
-This script uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations. So, if you run this script from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this on any server on any location.
+In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles.
 
 ### Setup
-
 1. Use your browser to signin into LinkedIn with the account you want to use for scraping.
-2. Open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
+2. After login, ppen your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
 3. Create a `.env` file in the root of this project
 4. Fill it with `LINKEDIN_SESSION_COOKIE_VALUE="the_value_from_step_2"`
-5. Run `npm start`
-6. Get a LinkedIn profile, like: http://localhost:3000/?url=https://www.linkedin.com/in/barackobama/
+
+### Starting
+1. Run `npm start`
+2. Get a LinkedIn profile, like: http://localhost:3000/?url=https://www.linkedin.com/in/barackobama/
 
 Example response:
 
@@ -100,9 +96,16 @@ Example response:
 }
 ```
 
-## About the performance
-- Upon start we will open a headless browser session, that session is re-used everytime someone requests profile data.
+### About using the session cookie
+This script uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations or requireing you to fill in Captcha's upon login. So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
+
+So, using a session cookie is the most reliable way that I currently know.
+
+You probably need to follow the setup steps when the scraper logs show it's not logged in anymore.
+
+### About the performance
+- Upon start we will open a headless browser session, that session is kept alive and is re-used everytime someone requests profile data. It uses about 400MB memory when in idle.
 - Scraping usually takes a few seconds, because the script needs to scroll through the page and expand several elements in order for all the data to appear.
 
-## Usage limits
+### Usage limits
 Read: [LinkedIn Commercial Use Limit](https://www.linkedin.com/help/linkedin/answer/52950)
