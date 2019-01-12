@@ -65,10 +65,10 @@ const setupScraper = async () => {
       height: 720
     })
 
-    statusLog(logSection, `Setting session cookie using cookie: ${process.env.LINKEDIN_SESSION_COOKIE_NAME} : ${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`)
+    statusLog(logSection, `Setting session cookie using cookie: ${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`)
 
     await page.setCookie({
-      'name': process.env.LINKEDIN_SESSION_COOKIE_NAME,
+      'name': 'li_at',
       'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
       'domain': '.www.linkedin.com'
     })
