@@ -1,21 +1,26 @@
-# Linkedin Profile scraper
+# LinkedIn Profile Scraper
 LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format.
 
 ## Getting started
-In order to scrape LinkedIn profiles, we need to make sure the headless browser is logged in into LinkedIn. For that you need to find your account's session ID.
+In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie.
 
-I suggest creating a new account and enable all the privacy options so people don't see you visiting their profiles.
+I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles.
 
-1. Signin into LinkedIn with the account you want to use for scraping.
-2. Open your Chrome Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
+### About using the session cookie
+This script uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations. So, if you run this script from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this on any server on any location.
+
+### Setup
+
+1. Use your browser to signin into LinkedIn with the account you want to use for scraping.
+2. Open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
 3. Create a `.env` file in the root of this project
-4. Fill it with `LINKEDIN_SESSION_COOKIE_NAME="li_at"` and `LINKEDIN_SESSION_COOKIE_VALUE="the-value-from-step-2"`
+4. Fill it with `LINKEDIN_SESSION_COOKIE_VALUE="the_value_from_step_2"`
 5. Run `npm start`
 6. Get a LinkedIn profile, like: http://localhost:3000/?url=https://www.linkedin.com/in/barackobama/
 
 Example response:
 
-```
+```json
 {
   "userProfile": {
     "fullName": "Barack Obama",
@@ -95,9 +100,9 @@ Example response:
 }
 ```
 
-## Performance
-- Upon start we will open a headless browser session, that session is re-used everytime someone requests profile data
-- Scraping usually takes a few seconds, because the script needs to scroll through the page and expand several elements in order for all the data to appear
+## About the performance
+- Upon start we will open a headless browser session, that session is re-used everytime someone requests profile data.
+- Scraping usually takes a few seconds, because the script needs to scroll through the page and expand several elements in order for all the data to appear.
 
-# Usage limits
+## Usage limits
 Read: [LinkedIn Commercial Use Limit](https://www.linkedin.com/help/linkedin/answer/52950)
