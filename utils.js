@@ -4,7 +4,7 @@ const textMiner = require('text-miner');
 const formatDate = (date) => {
   let formattedDate
   // date = "Present", "2018", "Dec 2018"
-  if(date === 'Present') {
+  if (date === 'Present') {
     formattedDate = moment().format()
   } else {
     formattedDate = moment(date, 'MMMY').format()
@@ -18,17 +18,6 @@ const getDurationInDays = (formattedStartDate, formattedEndDate) => {
   // +1 to include the start date
   return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
-
-// const getCleanText = (element) => {
-//   const textContent = (element && element.textContent) ? element.textContent : null
-
-//   if (!textContent) return textContent
-
-//   const textMinerCorpus = new textMiner.Corpus([textContent])
-//   const cleanText = textMinerCorpus.removeNewlines().removeInvalidCharacters().trim().documents[0].text
-
-//   return cleanText
-// }
 
 const getLocationFromText = async (text) => {
   // Text is something like: Amsterdam Area, Netherlands
@@ -62,8 +51,6 @@ const getCleanText = async (text) => {
 
   return cleanText
 }
-
-
 
 module.exports = {
   formatDate,
