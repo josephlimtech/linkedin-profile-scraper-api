@@ -1,9 +1,16 @@
 require('dotenv').config()
 const puppeteer = require('puppeteer');
-const { getDurationInDays, formatDate, getCleanText, getLocationFromText } = require('../utils');
+const {
+  getDurationInDays,
+  formatDate,
+  getCleanText,
+  getLocationFromText
+} = require('../utils');
 const path = require('path');
 const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+const {
+  JSDOM
+} = jsdom;
 global.appRoot = path.resolve(__dirname + '../../');
 
 const setupScraper = async () => {
@@ -17,7 +24,7 @@ const setupScraper = async () => {
     // const datadir = global.appRoot + '/ublock-data'
 
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       // userDataDir: datadir,
       args: [
         '--no-sandbox',
@@ -43,7 +50,7 @@ const setupScraper = async () => {
     await page.setRequestInterception(true);
 
     page.on('request', (req) => {
-      if(blockedResources.includes(req.resourceType())) {
+      if (blockedResources.includes(req.resourceType())) {
         req.abort()
       } else {
         req.continue()
@@ -53,7 +60,10 @@ const setupScraper = async () => {
     // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36')
 
-    await page.setViewport({width: 1200, height: 720})
+    await page.setViewport({
+      width: 1200,
+      height: 720
+    })
 
     statusLog(logSection, `Setting session cookie using cookie: ${process.env.LINKEDIN_SESSION_COOKIE_NAME} : ${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`)
 
@@ -123,7 +133,9 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
-  await page.goto(profileUrl, { waitUntil: 'domcontentloaded' });
+  await page.goto(profileUrl, {
+    waitUntil: 'domcontentloaded'
+  });
 
   statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)
 
@@ -138,9 +150,9 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   // Only click the expanding buttons when they exist
   const expandButtonsSelectors = [
-      '#experience-section .pv-profile-section__see-more-inline.link', // Experience
-      '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
-      '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
+    '#experience-section .pv-profile-section__see-more-inline.link', // Experience
+    '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
+    '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
   ];
 
   const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]']
@@ -306,6 +318,8 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
         durationInDays
       })
     }
+
+    return data
   });
 
   statusLog(logSection, `Got education data: ${education}`, scraperSessionId)
@@ -313,18 +327,18 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   statusLog(logSection, `Parsing skills data...`, scraperSessionId)
 
   const skills = await page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
-      // Note: the $$eval context is the browser context.
-      // So custom methods you define in this file are not available within this $$eval.
+    // Note: the $$eval context is the browser context.
+    // So custom methods you define in this file are not available within this $$eval.
 
-      return nodes.map((node) => {
-          const skillName = node.querySelector('.pv-skill-category-entity__name-text');
-          const endorsementCount = node.querySelector('.pv-skill-category-entity__endorsement-count');
+    return nodes.map((node) => {
+      const skillName = node.querySelector('.pv-skill-category-entity__name-text');
+      const endorsementCount = node.querySelector('.pv-skill-category-entity__endorsement-count');
 
-          return {
-              skillName: (skillName) ? skillName.textContent.trim() : null,
-              endorsementCount: (endorsementCount) ? parseInt(endorsementCount.textContent.trim()) : 0
-          }
-      })
+      return {
+        skillName: (skillName) ? skillName.textContent.trim() : null,
+        endorsementCount: (endorsementCount) ? parseInt(endorsementCount.textContent.trim()) : 0
+      }
+    })
   });
 
   statusLog(logSection, `Got skills data: ${skills}`, scraperSessionId)
@@ -339,23 +353,27 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   }
 };
 
-async function autoScroll(page){
-    await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 500;
-            var timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
+async function autoScroll(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve, reject) => {
+      var totalHeight = 0;
+      var distance = 500;
+      var timer = setInterval(() => {
+        var scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
 
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                    resolve();
-                }
-            }, 100);
-        });
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 100);
     });
+  });
 }
 
-module.exports = { setupScraper, getLinkedinProfileDetails, checkIfLoggedIn }
+module.exports = {
+  setupScraper,
+  getLinkedinProfileDetails,
+  checkIfLoggedIn
+}
