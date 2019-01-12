@@ -1,4 +1,5 @@
 const moment = require('moment');
+const textMiner = require('text-miner');
 
 const formatDate = (date) => {
   let formattedDate
@@ -13,11 +14,60 @@ const formatDate = (date) => {
 }
 
 const getDurationInDays = (formattedStartDate, formattedEndDate) => {
+  if (!formattedStartDate || !formattedEndDate) return null
   // +1 to include the start date
-  return moment(formattedStartDate).diff(moment(formattedEndDate), 'days') + 1
+  return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
+
+// const getCleanText = (element) => {
+//   const textContent = (element && element.textContent) ? element.textContent : null
+
+//   if (!textContent) return textContent
+
+//   const textMinerCorpus = new textMiner.Corpus([textContent])
+//   const cleanText = textMinerCorpus.removeNewlines().removeInvalidCharacters().trim().documents[0].text
+
+//   return cleanText
+// }
+
+const getLocationFromText = async (text) => {
+  // Text is something like: Amsterdam Area, Netherlands
+
+  if (!text) return null
+
+  const cleanText = text.replace(' Area', '')
+
+  const city = (cleanText) ? cleanText.split(', ')[0] : null
+  const country = (cleanText) ? cleanText.split(', ')[1] : null
+
+  return {
+    city,
+    country
+  }
+}
+
+const getCleanText = async (text) => {
+  const regexRemoveMultipleSpaces = / +/g
+  const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
+
+  if (!text) return null
+
+  const cleanText = text
+    .replace(regexRemoveLineBreaks, '')
+    .replace(regexRemoveMultipleSpaces, ' ')
+    .replace('...', '')
+    .replace('See more', '')
+    .replace('See less', '')
+    .trim()
+
+  return cleanText
+}
+
+
 
 module.exports = {
   formatDate,
-  getDurationInDays
+  getDurationInDays,
+  getCleanText,
+  getLocationFromText
 }
