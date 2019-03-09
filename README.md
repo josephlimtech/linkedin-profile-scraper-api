@@ -97,7 +97,7 @@ Example response:
 ```
 
 ### About using the session cookie
-This script uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations or requireing you to fill in Captcha's upon login. So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
+This script uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations or requiring you to fill in Captcha's upon login. So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
 
 So, using a session cookie is the most reliable way that I currently know.
 
