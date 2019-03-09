@@ -2,11 +2,11 @@
 LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format.
 
 ## Getting started
-In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles.
+In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
 ### Setup
 1. Use your browser to signin into LinkedIn with the account you want to use for scraping.
-2. After login, ppen your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
+2. After login, open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
 3. Create a `.env` file in the root of this project
 4. Fill it with `LINKEDIN_SESSION_COOKIE_VALUE="the_value_from_step_2"`
 
