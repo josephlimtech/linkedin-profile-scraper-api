@@ -211,7 +211,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
     const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
     const location = await getLocationFromText(locationText)
 
-    const photoElement = profileSection.querySelector('.pv-top-card__photo')
+    const photoElement = profileSection.querySelector('.pv-top-card__photo') || profileSection.querySelector('.profile-photo-edit__preview')
     const photo = (photoElement && photoElement.getAttribute('src')) ? photoElement.getAttribute('src') : null
 
     const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
