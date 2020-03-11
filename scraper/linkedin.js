@@ -150,12 +150,13 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   // Only click the expanding buttons when they exist
   const expandButtonsSelectors = [
+    '.pv-profile-section.pv-about-section .lt-line-clamp__more', // About
     '#experience-section .pv-profile-section__see-more-inline.link', // Experience
     '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
     '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
   ];
 
-  const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]']
+  const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]', '.lt-line-clamp__more[href="#"]:not(.lt-line-clamp__ellipsis--dummy)']
 
   statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
@@ -196,24 +197,24 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
     const regexRemoveMultipleSpaces = / +/g
     const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
 
-    const profileSection = document.querySelector('.pv-profile-section')
+    const profileSection = document.querySelector('.pv-top-card')
 
     const url = window.location.href
 
-    const fullNameElement = profileSection.querySelector('.pv-top-card-section__name')
+    const fullNameElement = profileSection.querySelector('.pv-top-card--list li:first-child')
     const fullName = (fullNameElement && fullNameElement.textContent) ? await window.getCleanText(fullNameElement.textContent) : null
 
-    const titleElement = profileSection.querySelector('.pv-top-card-section__headline')
+    const titleElement = profileSection.querySelector('h2')
     const title = (titleElement && titleElement.textContent) ? await window.getCleanText(titleElement.textContent) : null
 
-    const locationElement = profileSection.querySelector('.pv-top-card-section__location')
+    const locationElement = profileSection.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
     const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
     const location = await getLocationFromText(locationText)
 
-    const photoElement = profileSection.querySelector('.pv-top-card-section__photo')
-    const photo = (photoElement && photoElement.style.backgroundImage) ? photoElement.style.backgroundImage.slice(4, -1).replace(/"/g, "") : null
+    const photoElement = profileSection.querySelector('.pv-top-card__photo') || profileSection.querySelector('.profile-photo-edit__preview')
+    const photo = (photoElement && photoElement.getAttribute('src')) ? photoElement.getAttribute('src') : null
 
-    const descriptionElement = profileSection.querySelector('.pv-top-card-section__summary-text')
+    const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
     const description = (descriptionElement && descriptionElement.textContent) ? await window.getCleanText(descriptionElement.textContent) : null
 
     return {
