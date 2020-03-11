@@ -20,17 +20,36 @@ const getDurationInDays = (formattedStartDate, formattedEndDate) => {
 }
 
 const getLocationFromText = async (text) => {
-  // Text is something like: Amsterdam Area, Netherlands
+  // Text is something like: Amsterdam Oud-West, North Holland Province, Netherlands
 
   if (!text) return null
 
-  const cleanText = text.replace(' Area', '')
+  const cleanText = text.replace(' Area', '').trim();
 
-  const city = (cleanText) ? cleanText.split(', ')[0] : null
-  const country = (cleanText) ? cleanText.split(', ')[1] : null
+  const parts = cleanText.split(', ');
+
+  let city = null
+  let province = null
+  let country = null
+
+  if (parts.length === 3) {
+    city = parts[0]
+    province = parts[1]
+    country = parts[2]
+  }
+
+  if (parts.length === 2) {
+    city = parts[0]
+    country = parts[1]
+  }
+
+  if (parts.length === 1) {
+    city = parts[0]
+  }
 
   return {
     city,
+    province,
     country
   }
 }
