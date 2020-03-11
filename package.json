@@ -12,13 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "clean-text-utils": "^1.1.17",
-    "dom-parser": "^0.1.5",
     "dotenv": "^6.2.0",
-    "express": "^4.16.4",
-    "jsdom": "^13.1.0",
-    "moment": "^2.23.0",
-    "puppeteer": "^3.0.2",
-    "text-miner": "^1.0.6"
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "puppeteer": "^3.0.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.9"

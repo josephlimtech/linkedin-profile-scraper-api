@@ -7,10 +7,7 @@ const {
   getLocationFromText
 } = require('../utils');
 const path = require('path');
-const jsdom = require("jsdom");
-const {
-  JSDOM
-} = jsdom;
+
 global.appRoot = path.resolve(__dirname + '../../');
 
 const setupScraper = async () => {
