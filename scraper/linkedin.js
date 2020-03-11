@@ -7,10 +7,7 @@ const {
   getLocationFromText
 } = require('../utils');
 const path = require('path');
-const jsdom = require("jsdom");
-const {
-  JSDOM
-} = jsdom;
+
 global.appRoot = path.resolve(__dirname + '../../');
 
 const setupScraper = async () => {
@@ -194,9 +191,6 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
   const userProfile = await page.evaluate(async () => {
-    const regexRemoveMultipleSpaces = / +/g
-    const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
-
     const profileSection = document.querySelector('.pv-top-card')
 
     const url = window.location.href
@@ -233,8 +227,6 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
 
   const experiences = await page.$$eval('#experience-section ul > .ember-view', async (nodes) => {
-    const regexRemoveMultipleSpaces = / +/g
-    const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
     let data = []
 
     // Using a for loop so we can use await inside of it
