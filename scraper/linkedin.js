@@ -222,7 +222,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   })
 
 
-  statusLog(logSection, `Got user profile data: ${userProfile}`, scraperSessionId)
+  statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId)
 
   statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
 
@@ -274,7 +274,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
   });
 
 
-  statusLog(logSection, `Got experiences data: ${experiences}`, scraperSessionId)
+  statusLog(logSection, `Got experiences data: ${JSON.stringify(experiences)}`, scraperSessionId)
 
   statusLog(logSection, `Parsing education data...`, scraperSessionId)
 
@@ -319,7 +319,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
     return data
   });
 
-  statusLog(logSection, `Got education data: ${education}`, scraperSessionId)
+  statusLog(logSection, `Got education data: ${JSON.stringify(education)}`, scraperSessionId)
 
   statusLog(logSection, `Parsing skills data...`, scraperSessionId)
 
@@ -338,7 +338,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
     })
   });
 
-  statusLog(logSection, `Got skills data: ${skills}`, scraperSessionId)
+  statusLog(logSection, `Got skills data: ${JSON.stringify(skills)}`, scraperSessionId)
 
   statusLog(logSection, `Done! Returned profile details for: ${profileUrl}`, scraperSessionId)
 
