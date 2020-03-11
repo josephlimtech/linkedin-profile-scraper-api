@@ -249,9 +249,12 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       const startDate = (startDatePart) ? await formatDate(startDatePart) : null
 
       const endDatePart = (dateRangeText) ? await window.getCleanText(dateRangeText.split('–')[1]) : null;
-      const endDate = (endDatePart) ? await formatDate(endDatePart) : null
+      const endDateIsPresent = (endDatePart) ? endDatePart.trim().toLowerCase() === 'present' : false;
+      const endDate = (endDatePart && !endDateIsPresent) ? await formatDate(endDatePart) : null;
 
-      const durationInDays = (startDate && endDate) ? await getDurationInDays(startDate, endDate) : null
+      const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? await getDurationInDays(startDate, endDate) : null
+      const durationInDaysForPresentDate = (endDateIsPresent) ? await getDurationInDays(startDate, new Date()) : null
+      const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
 
       const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
       const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
@@ -263,8 +266,9 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
         location,
         startDate,
         endDate,
+        endDateIsPresent,
         durationInDays,
-        description,
+        description
       })
     }
 
