@@ -1,5 +1,4 @@
 const moment = require('moment');
-const textMiner = require('text-miner');
 
 const formatDate = (date) => {
   let formattedDate
