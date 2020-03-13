@@ -7,7 +7,7 @@ In order to scrape LinkedIn profiles, we need to make sure the scraper is logged
 ### Setup
 1. Clone this repo.
 2. Run `npm install`.
-3. Use your browser to signin into LinkedIn with the account you want to use for scraping.
+3. Leave your terminal and use your browser to signin into LinkedIn.com with the account you want to use for scraping.
 4. After login, open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
 5. Create a `.env` file in the root of this project
 6. Fill it with `LINKEDIN_SESSION_COOKIE_VALUE="the_value_from_step_2"`
