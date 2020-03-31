@@ -74,7 +74,9 @@ const setupScraper = async () => {
 
     statusLog(logSection, 'Browsing to LinkedIn.com in the background using a headless browser...')
 
-    await page.goto('https://www.linkedin.com/')
+    await page.goto('https://www.linkedin.com/', {
+      waitUntil: 'domcontentloaded'
+    })
 
     statusLog(logSection, 'Adding helper methods to page')
     await page.exposeFunction('getCleanText', getCleanText);
