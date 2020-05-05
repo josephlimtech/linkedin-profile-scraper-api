@@ -6,35 +6,26 @@ const {
   getCleanText,
   getLocationFromText
 } = require('../utils');
-const path = require('path');
-
-global.appRoot = path.resolve(__dirname + '../../');
 
 const setupScraper = async () => {
   try {
+    // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
     const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
     const logSection = 'setup'
 
     statusLog(logSection, 'Launching puppeteer in the background...')
 
-    // const ext = global.appRoot + '/ublock-chromium'
-    // const datadir = global.appRoot + '/ublock-data'
-
     const browser = await puppeteer.launch({
       headless: true,
-      // userDataDir: datadir,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         "--proxy-server='direct://",
         '--proxy-bypass-list=*',
-        // `--load-extension=${ext}`,
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--disable-gpu'
       ]
-      // '--no-sandbox', '--disable-setuid-sandbox' -> For the Heroku Buildpack: https://github.com/nguyenkaos/puppeteer-heroku-buildpack . More info: https://github.com/jontewks/puppeteer-heroku-buildpack/issues/24#issuecomment-421789066
-      // "--proxy-server='direct://'", '--proxy-bypass-list=*' -> For speed improvements: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-424357709
     })
 
     statusLog(logSection, 'Puppeteer launched!')
@@ -138,9 +129,6 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)
 
-  // TODO: first check if the needed selectors are present on the page, or else we need to update it in this script
-  // TODO: notifier should be build if LinkedIn changes their selectors
-
   statusLog(logSection, 'Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...', scraperSessionId)
 
   await autoScroll(page);
@@ -181,14 +169,6 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       }
     }
   }
-
-  // TODO: check if we need to expand experience, education and skills AGAIN (for the rest of the data)
-
-  // Converting the complete string to a document, so we can querySelector into it instead of using Puppeteer
-  // TODO: we can also close this thread now so puppeteer can crawl other profiles, resulting on more pages per minute we can crawl
-  // const html = await page.content()
-  // const dom = new JSDOM(html);
-  // console.log(dom.window.document.querySelector('.pv-entity__description').textContent)
 
   statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
