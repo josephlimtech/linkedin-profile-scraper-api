@@ -1,14 +1,18 @@
 {
   "name": "linkedin-profile-scraper",
   "version": "1.0.0",
-  "description": "",
+  "description": "LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured LinkedIn public profile data in JSON format.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jvandenaardweg/linkedin-profile-scraper.git"
+  },
   "license": "ISC",
   "dependencies": {
     "clean-text-utils": "^1.1.17",
