@@ -70,9 +70,16 @@ const getCleanText = async (text) => {
   return cleanText
 }
 
+const statusLog = async (section, message, scraperSessionId) => {
+  const sessionPart = (scraperSessionId) ? ` (${scraperSessionId})` : ''
+  const messagePart = (message) ? `: ${message}` : null
+  return console.log(`Scraper (${section})${sessionPart}${messagePart}`)
+}
+
 module.exports = {
   formatDate,
   getDurationInDays,
   getCleanText,
-  getLocationFromText
+  getLocationFromText,
+  statusLog
 }
