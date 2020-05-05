@@ -4,7 +4,8 @@ const {
   getDurationInDays,
   formatDate,
   getCleanText,
-  getLocationFromText
+  getLocationFromText,
+  statusLog
 } = require('../utils');
 
 const setupScraper = async () => {
@@ -96,12 +97,6 @@ const setupScraper = async () => {
     throw new Error(err)
   }
 };
-
-const statusLog = async (section, message, scraperSessionId) => {
-  const sessionPart = (scraperSessionId) ? ` (${scraperSessionId})` : ''
-  const messagePart = (message) ? `: ${message}` : null
-  return console.log(`Scraper (${section})${sessionPart}${messagePart}`)
-}
 
 const checkIfLoggedIn = async (page) => {
   const logSection = 'authentication'
