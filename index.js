@@ -27,11 +27,8 @@ console.log(`Server setup: Setting up...`);
       const urlToScrape = req.query.url
 
       if (urlToScrape && urlToScrape.includes('linkedin.com/')) {
-        // TODO: this should be a worker process
-        // We should send an event to the worker process and wait for an update
-        // So this server can handle more concurrent connections
         const linkedinProfileDetails = await getLinkedinProfileDetails(page, urlToScrape)
-        res.json({ ...linkedinProfileDetails })
+        res.json(linkedinProfileDetails)
       } else {
         res.json({
           message: 'Missing the url parameter. Or given URL is not an LinkedIn URL.'
