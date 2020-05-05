@@ -12,7 +12,7 @@ global.appRoot = path.resolve(__dirname + '../../');
 
 const setupScraper = async () => {
   try {
-    const blockedResources = ['image', 'stylesheet', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
+    const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
     const logSection = 'setup'
 
     statusLog(logSection, 'Launching puppeteer in the background...')
