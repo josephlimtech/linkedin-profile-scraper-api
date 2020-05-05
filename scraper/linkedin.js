@@ -70,10 +70,13 @@ const setupScraper = async () => {
     })
 
     statusLog(logSection, 'Adding helper methods to page')
-    await page.exposeFunction('getCleanText', getCleanText);
-    await page.exposeFunction('formatDate', formatDate);
-    await page.exposeFunction('getDurationInDays', getDurationInDays);
-    await page.exposeFunction('getLocationFromText', getLocationFromText);
+    
+    await Promise.all([
+      page.exposeFunction('getCleanText', getCleanText),
+      page.exposeFunction('formatDate', formatDate),
+      page.exposeFunction('getDurationInDays', getDurationInDays),
+      page.exposeFunction('getLocationFromText', getLocationFromText)
+    ]);
 
     statusLog(logSection, 'Checking if we are logged in successfully...')
 
