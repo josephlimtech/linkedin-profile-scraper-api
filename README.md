@@ -2,10 +2,10 @@
 LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format.
 
 This scraper will extract publicly available data:
-* **Profile details:** name, title, location, picture, description and url
-* **Experience details:** title, company name, duration, start date, end date and the description
-* **Education details:** school name, degree name, start date and end date
-* **Skill details:** name and endorsement count
+* **🧑‍🎨Profile details:** name, title, location, picture, description and url
+* **👨‍💼Experience details:** title, company name, duration, start date, end date and the description
+* **👨‍🎓Education details:** school name, degree name, start date and end date
+* **🏋️‍♂️Skill details:** name and endorsement count
 
 All dates are formatted to a generic format.
 
