@@ -5,7 +5,7 @@ This scraper will extract publicly available data:
 
 **🧑‍🎨Profile details:** name, title, location, picture, description and url
 
-**👨‍💼Experience details:** title, company name, duration, start date, end date and the description
+**👨‍💼Experience details:** title, company name, location, duration, start date, end date and the description
 
 **👨‍🎓Education details:** school name, degree name, start date and end date
 
