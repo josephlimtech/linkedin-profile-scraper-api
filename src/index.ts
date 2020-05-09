@@ -1,8 +1,8 @@
 require('dotenv').config();
-const express = require('express');
+import express from 'express';
 const app = express();
 const port = process.env.PORT || 3000;
-const { getLinkedinProfileDetails, setupScraper, checkIfLoggedIn } = require('./scraper/linkedin');
+import { getLinkedinProfileDetails, setupScraper, checkIfLoggedIn } from './scraper/linkedin';
 
 console.log(`Server setup: Setting up...`);
 
@@ -24,9 +24,9 @@ console.log(`Server setup: Setting up...`);
     })
 
     app.get('/', async (req, res) => {
-      const urlToScrape = req.query.url
+      const urlToScrape = req.query.url as string;
 
-      if (urlToScrape && urlToScrape.includes('linkedin.com/')) {
+      if (urlToScrape?.includes('linkedin.com/')) {
         const linkedinProfileDetails = await getLinkedinProfileDetails(page, urlToScrape)
         res.json(linkedinProfileDetails)
       } else {

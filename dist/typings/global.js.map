@@ -1,0 +1,1 @@
+{"version":3,"file":"global.js","sourceRoot":"/","sources":["typings/global.ts"],"names":[],"mappings":"","sourcesContent":["interface Window {\n  getCleanText: any\n}\n"]}

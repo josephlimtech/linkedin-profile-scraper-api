@@ -1,14 +1,56 @@
 require('dotenv').config()
-const puppeteer = require('puppeteer');
-const {
+import puppeteer from 'puppeteer';
+
+import {
   getDurationInDays,
   formatDate,
   getCleanText,
   getLocationFromText,
   statusLog
-} = require('../utils');
+} from '../utils';
 
-const setupScraper = async () => {
+interface Location {
+  city: string | null;
+  province: string | null;
+  country: string | null
+}
+
+interface Profile {
+  fullName: string;
+  title: string;
+  location: Location | null;
+  photo: string;
+  description: string;
+  url: string;
+}
+
+interface Experience {
+  title: string;
+  company: string;
+  employmentType: string;
+  location: Location | null;
+  startDate: string;
+  endDate: string;
+  endDateIsPresent: boolean;
+  durationInDays: number | null;
+  description: string;
+}
+
+interface Education {
+  schoolName: string;
+  degreeName: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate: string;
+  durationInDays: number | null;
+}
+
+interface Skill {
+  skillName: string | null;
+  endorsementCount: number | null;
+}
+
+export const setupScraper = async () => {
   try {
     // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
     const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
@@ -58,7 +100,7 @@ const setupScraper = async () => {
 
     await page.setCookie({
       'name': 'li_at',
-      'value': process.env.LINKEDIN_SESSION_COOKIE_VALUE,
+      'value': `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
       'domain': '.www.linkedin.com'
     })
 
@@ -71,7 +113,7 @@ const setupScraper = async () => {
     })
 
     statusLog(logSection, 'Adding helper methods to page')
-    
+
     await Promise.all([
       page.exposeFunction('getCleanText', getCleanText),
       page.exposeFunction('formatDate', formatDate),
@@ -83,22 +125,23 @@ const setupScraper = async () => {
 
     const isLoggedIn = await checkIfLoggedIn(page);
 
-    if (isLoggedIn) {
-      statusLog(logSection, 'Done!')
-      return {
-        page,
-        browser
-      }
-    } else {
+    if (!isLoggedIn) {
       statusLog(logSection, 'Error! Scraper not logged in into LinkedIn')
-      return new Error('Scraper not logged in into LinkedIn')
+      throw new Error('Scraper not logged in into LinkedIn')
+    }
+
+    statusLog(logSection, 'Done!')
+
+    return {
+      page,
+      browser
     }
   } catch (err) {
     throw new Error(err)
   }
 };
 
-const checkIfLoggedIn = async (page) => {
+export const checkIfLoggedIn = async (page) => {
   const logSection = 'authentication'
 
   statusLog(logSection, 'Check if we are still logged in...')
@@ -114,7 +157,7 @@ const checkIfLoggedIn = async (page) => {
   return isLoggedIn
 };
 
-const getLinkedinProfileDetails = async (page, profileUrl) => {
+export const getLinkedinProfileDetails = async (page, profileUrl) => {
   const logSection = 'scraping'
 
   const scraperSessionId = new Date().getTime();
@@ -170,22 +213,22 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
-  const userProfile = await page.evaluate(async () => {
+  const userProfile: Profile = await page.evaluate(async () => {
     const profileSection = document.querySelector('.pv-top-card')
 
     const url = window.location.href
 
-    const fullNameElement = profileSection.querySelector('.pv-top-card--list li:first-child')
+    const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
     const fullName = (fullNameElement && fullNameElement.textContent) ? await window.getCleanText(fullNameElement.textContent) : null
 
-    const titleElement = profileSection.querySelector('h2')
+    const titleElement = profileSection?.querySelector('h2')
     const title = (titleElement && titleElement.textContent) ? await window.getCleanText(titleElement.textContent) : null
 
-    const locationElement = profileSection.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
+    const locationElement = profileSection?.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
     const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
     const location = await getLocationFromText(locationText)
 
-    const photoElement = profileSection.querySelector('.pv-top-card__photo') || profileSection.querySelector('.profile-photo-edit__preview')
+    const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
     const photo = (photoElement && photoElement.getAttribute('src')) ? photoElement.getAttribute('src') : null
 
     const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
@@ -198,7 +241,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       photo,
       description,
       url
-    }
+    } as Profile
   })
 
 
@@ -206,16 +249,20 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
 
-  const experiences = await page.$$eval('#experience-section ul > .ember-view', async (nodes) => {
-    let data = []
+  const experiences: Experience[] = await page.$$eval('#experience-section ul > .ember-view', async (nodes) => {
+    let data: Experience[] = []
 
     // Using a for loop so we can use await inside of it
     for (const node of nodes) {
       const titleElement = node.querySelector('h3');
       const title = (titleElement && titleElement.textContent) ? await window.getCleanText(titleElement.textContent) : null
 
+      const employmentTypeElement = node.querySelector('span.pv-entity__secondary-title');
+      const employmentType = (employmentTypeElement && employmentTypeElement.textContent) ? await window.getCleanText(employmentTypeElement.textContent) : null
+
       const companyElement = node.querySelector('.pv-entity__secondary-title');
-      const company = (companyElement && companyElement.textContent) ? await window.getCleanText(companyElement.textContent) : null
+      const companyElementClean = companyElement.removeChild(companyElement.querySelector('span'));
+      const company = (companyElementClean && companyElementClean.textContent) ? await window.getCleanText(companyElementClean.textContent) : null
 
       const descriptionElement = node.querySelector('.pv-entity__description');
       const description = (descriptionElement && descriptionElement.textContent) ? await window.getCleanText(descriptionElement.textContent) : null
@@ -241,6 +288,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       data.push({
         title,
         company,
+        employmentType,
         location,
         startDate,
         endDate,
@@ -258,10 +306,10 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, `Parsing education data...`, scraperSessionId)
 
-  const education = await page.$$eval('#education-section ul > .ember-view', async (nodes) => {
+  const education: Education[] = await page.$$eval('#education-section ul > .ember-view', async (nodes) => {
     // Note: the $$eval context is the browser context.
     // So custom methods you define in this file are not available within this $$eval.
-    let data = []
+    let data: Education[] = []
     for (const node of nodes) {
 
       const schoolNameElement = node.querySelector('h3.pv-entity__school-name');
@@ -273,8 +321,8 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       const fieldOfStudyElement = node.querySelector('.pv-entity__fos .pv-entity__comma-item');
       const fieldOfStudy = (fieldOfStudyElement && fieldOfStudyElement.textContent) ? await window.getCleanText(fieldOfStudyElement.textContent) : null;
 
-      const gradeElement = node.querySelector('.pv-entity__grade .pv-entity__comma-item');
-      const grade = (gradeElement && gradeElement.textContent) ? await window.getCleanText(fieldOfStudyElement.textContent) : null;
+      // const gradeElement = node.querySelector('.pv-entity__grade .pv-entity__comma-item');
+      // const grade = (gradeElement && gradeElement.textContent) ? await window.getCleanText(fieldOfStudyElement.textContent) : null;
 
       const dateRangeElement = node.querySelectorAll('.pv-entity__dates time');
 
@@ -303,7 +351,7 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, `Parsing skills data...`, scraperSessionId)
 
-  const skills = await page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
+  const skills: Skill[] = await page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
     // Note: the $$eval context is the browser context.
     // So custom methods you define in this file are not available within this $$eval.
 
@@ -314,8 +362,8 @@ const getLinkedinProfileDetails = async (page, profileUrl) => {
       return {
         skillName: (skillName) ? skillName.textContent.trim() : null,
         endorsementCount: (endorsementCount) ? parseInt(endorsementCount.textContent.trim()) : 0
-      }
-    })
+      } as Skill;
+    }) as Skill[]
   });
 
   statusLog(logSection, `Got skills data: ${JSON.stringify(skills)}`, scraperSessionId)
@@ -347,10 +395,4 @@ async function autoScroll(page) {
       }, 100);
     });
   });
-}
-
-module.exports = {
-  setupScraper,
-  getLinkedinProfileDetails,
-  checkIfLoggedIn
 }

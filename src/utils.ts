@@ -1,6 +1,6 @@
-const moment = require('moment');
+import moment from 'moment';
 
-const formatDate = (date) => {
+export const formatDate = (date: moment.MomentInput) => {
   let formattedDate
   // date = "Present", "2018", "Dec 2018"
   if (date === 'Present') {
@@ -12,13 +12,13 @@ const formatDate = (date) => {
   return formattedDate
 }
 
-const getDurationInDays = (formattedStartDate, formattedEndDate) => {
+export const getDurationInDays = (formattedStartDate, formattedEndDate) => {
   if (!formattedStartDate || !formattedEndDate) return null
   // +1 to include the start date
   return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
 
-const getLocationFromText = async (text) => {
+export const getLocationFromText = async (text: string) => {
   // Text is something like: Amsterdam Oud-West, North Holland Province, Netherlands
 
   if (!text) return null
@@ -27,9 +27,9 @@ const getLocationFromText = async (text) => {
 
   const parts = cleanText.split(', ');
 
-  let city = null
-  let province = null
-  let country = null
+  let city: null | string = null
+  let province: null | string = null
+  let country: null | string = null
 
   if (parts.length === 3) {
     city = parts[0]
@@ -53,7 +53,7 @@ const getLocationFromText = async (text) => {
   }
 }
 
-const getCleanText = async (text) => {
+export const getCleanText = async (text: string) => {
   const regexRemoveMultipleSpaces = / +/g
   const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
 
@@ -70,16 +70,9 @@ const getCleanText = async (text) => {
   return cleanText
 }
 
-const statusLog = async (section, message, scraperSessionId) => {
+export const statusLog = async (section: string, message: string, scraperSessionId?: string | number) => {
   const sessionPart = (scraperSessionId) ? ` (${scraperSessionId})` : ''
   const messagePart = (message) ? `: ${message}` : null
   return console.log(`Scraper (${section})${sessionPart}${messagePart}`)
 }
 
-module.exports = {
-  formatDate,
-  getDurationInDays,
-  getCleanText,
-  getLocationFromText,
-  statusLog
-}
