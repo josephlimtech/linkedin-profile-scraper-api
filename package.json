@@ -7,7 +7,7 @@
     "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/index.ts",
     "build": "npx tsc -p tsconfig.production.json",
     "test:watch": "NODE_ENV=test jest --watch --coverage",
-    "test": "NODE_ENV=test jest --silent --maxWorkers=4"
+    "test": "NODE_ENV=test jest --silent --maxWorkers=4 --coverage"
   },
   "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
   "repository": {
@@ -26,7 +26,7 @@
     "@types/jest": "^25.2.1",
     "@types/node": "^13.13.5",
     "@types/puppeteer": "^2.0.1",
-    "jest": "^26.0.1",
+    "jest": "^25.5.1",
     "nodemon": "^2.0.2",
     "ts-jest": "^25.5.1",
     "ts-node-dev": "^1.0.0-pre.44",

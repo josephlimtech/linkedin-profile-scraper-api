@@ -1,16 +1,16 @@
 require('dotenv').config()
-import puppeteer from 'puppeteer';
-import { Location } from '../utils'
 
-import {
-  getDurationInDays,
-  formatDate,
-  getCleanText,
-  getLocationFromText,
-  statusLog
-} from '../utils';
+import puppeteer from 'puppeteer'
 
-interface Profile {
+import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog } from '../utils'
+
+export interface Location {
+  city: string | null;
+  province: string | null;
+  country: string | null
+}
+
+export interface Profile {
   fullName: string;
   title: string;
   location: Location | null;
@@ -19,7 +19,7 @@ interface Profile {
   url: string;
 }
 
-interface Experience {
+export interface Experience {
   title: string;
   company: string;
   employmentType: string;
@@ -31,7 +31,7 @@ interface Experience {
   description: string;
 }
 
-interface Education {
+export interface Education {
   schoolName: string;
   degreeName: string;
   fieldOfStudy: string;
@@ -40,10 +40,11 @@ interface Education {
   durationInDays: number | null;
 }
 
-interface Skill {
+export interface Skill {
   skillName: string | null;
   endorsementCount: number | null;
 }
+
 
 export const setupScraper = async () => {
   try {

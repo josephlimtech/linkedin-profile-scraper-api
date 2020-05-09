@@ -1,10 +1,5 @@
 import moment from 'moment';
-
-export interface Location {
-  city: string | null;
-  province: string | null;
-  country: string | null
-}
+import { Location } from '../scraper/linkedin';
 
 export const formatDate = (date: moment.MomentInput): string => {
   if (date === 'Present') {
