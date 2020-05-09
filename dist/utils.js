@@ -3,14 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const moment_1 = tslib_1.__importDefault(require("moment"));
 exports.formatDate = (date) => {
-    let formattedDate;
     if (date === 'Present') {
-        formattedDate = moment_1.default().format();
+        return moment_1.default().format();
     }
-    else {
-        formattedDate = moment_1.default(date, 'MMMY').format();
-    }
-    return formattedDate;
+    return moment_1.default(date, 'MMMY').format();
 };
 exports.getDurationInDays = (formattedStartDate, formattedEndDate) => {
     if (!formattedStartDate || !formattedEndDate)

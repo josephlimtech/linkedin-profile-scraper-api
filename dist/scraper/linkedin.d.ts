@@ -1,9 +1,5 @@
 import puppeteer from 'puppeteer';
-interface Location {
-    city: string | null;
-    province: string | null;
-    country: string | null;
-}
+import { Location } from '../utils';
 interface Profile {
     fullName: string;
     title: string;
@@ -17,8 +13,8 @@ interface Experience {
     company: string;
     employmentType: string;
     location: Location | null;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     endDateIsPresent: boolean;
     durationInDays: number | null;
     description: string;
@@ -27,8 +23,8 @@ interface Education {
     schoolName: string;
     degreeName: string;
     fieldOfStudy: string;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     durationInDays: number | null;
 }
 interface Skill {

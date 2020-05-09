@@ -362,19 +362,19 @@
         "signature": "1544ab3b5a57eed886c3bac6e18a65327b1b1caa633941d721530f6493a068d9"
       },
       "../src/utils.ts": {
-        "version": "bd2732aef23d689a7fe582b9e3003a691fd7adfef8b4c43a6bb7a2c5d5867680",
-        "signature": "5c4ee7c85eddee38944a903cf5d1dafba9bc76c59e663ccd729916c0aefe97ad"
+        "version": "c7e54313d2946f2bb34fdbe9df7e8d234d8da0a92dd82b4330f3b7da547ca793",
+        "signature": "315af6196434efa4f1dc9ded2f14f9c884ae867a48aeaa6dcc4d3ec7eeb3a0d7"
       },
       "../src/scraper/linkedin.ts": {
-        "version": "78d484c7b6cee5818b34dcf502d5493d7b7ab41856619cfde1bb7743e434df7a",
-        "signature": "bfb5d5b58a6c068d1aada1299f69f56343049a5dc8d9a878438d5749b163f189"
+        "version": "bfe15d23f52a2c81d5e2f3203943bb1ebcda3bbf1f8ddd40695c53e2215b38a2",
+        "signature": "479e1eb5abf102c32972fac5a62a2d354f9f8d3b7738ee45ffec954d9c3990d3"
       },
       "../src/index.ts": {
         "version": "02dc147a2f773d20bdab77f4c40ab3bad69639ce2898546bd5b8ed33a6e6469f",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../src/typings/global.ts": {
-        "version": "e54d3748b32d6e7f76b586df14f5c6e9ff424d7de8b2050282329e6b0f99ae4a",
+        "version": "cce622df31fd9664633ebfb91595948b9de883e1410d52e1f4580ac8b13af859",
         "signature": "543752c848e35311d3da4c7f70337331204de6d92bde40e5d12c1713b7f3155e"
       },
       "../node_modules/jest-diff/build/cleanupsemantic.d.ts": {
@@ -1865,7 +1865,8 @@
         "../node_modules/moment/ts3.1-typings/moment.d.ts"
       ],
       "../src/scraper/linkedin.ts": [
-        "../node_modules/@types/puppeteer/index.d.ts"
+        "../node_modules/@types/puppeteer/index.d.ts",
+        "../src/utils.ts"
       ],
       "../node_modules/jest-diff/build/cleanupsemantic.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
@@ -1956,7 +1957,6 @@
       "../node_modules/typescript/lib/lib.es2018.regexp.d.ts",
       "../node_modules/typescript/lib/lib.es2020.bigint.d.ts",
       "../node_modules/typescript/lib/lib.esnext.intl.d.ts",
-      "../src/typings/global.ts",
       "../node_modules/tslib/tslib.d.ts",
       "../node_modules/@types/node/globals.d.ts",
       "../node_modules/@types/node/async_hooks.d.ts",
@@ -2020,8 +2020,7 @@
       "../node_modules/@types/puppeteer/index.d.ts",
       "../node_modules/moment/ts3.1-typings/moment.d.ts",
       "../src/utils.ts",
-      "../src/scraper/linkedin.ts",
-      "../src/index.ts",
+      "../src/typings/global.ts",
       "../node_modules/jest-diff/build/cleanupsemantic.d.ts",
       "../node_modules/jest-diff/build/types.d.ts",
       "../node_modules/jest-diff/build/difflines.d.ts",
@@ -2029,7 +2028,9 @@
       "../node_modules/jest-diff/build/index.d.ts",
       "../node_modules/pretty-format/build/types.d.ts",
       "../node_modules/pretty-format/build/index.d.ts",
-      "../node_modules/@types/jest/index.d.ts"
+      "../node_modules/@types/jest/index.d.ts",
+      "../src/scraper/linkedin.ts",
+      "../src/index.ts"
     ]
   },
   "version": "3.8.3"

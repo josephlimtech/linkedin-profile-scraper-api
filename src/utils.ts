@@ -1,24 +1,26 @@
 import moment from 'moment';
 
-export const formatDate = (date: moment.MomentInput) => {
-  let formattedDate
-  // date = "Present", "2018", "Dec 2018"
-  if (date === 'Present') {
-    formattedDate = moment().format()
-  } else {
-    formattedDate = moment(date, 'MMMY').format()
-  }
-
-  return formattedDate
+export interface Location {
+  city: string | null;
+  province: string | null;
+  country: string | null
 }
 
-export const getDurationInDays = (formattedStartDate, formattedEndDate) => {
+export const formatDate = (date: moment.MomentInput): string => {
+  if (date === 'Present') {
+    return moment().format()
+  }
+
+  return moment(date, 'MMMY').format()
+}
+
+export const getDurationInDays = (formattedStartDate: string, formattedEndDate: Date | string): number | null => {
   if (!formattedStartDate || !formattedEndDate) return null
   // +1 to include the start date
   return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
 
-export const getLocationFromText = async (text: string) => {
+export const getLocationFromText = async (text: string): Promise<Location | null> => {
   // Text is something like: Amsterdam Oud-West, North Holland Province, Netherlands
 
   if (!text) return null
