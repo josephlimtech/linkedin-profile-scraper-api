@@ -1,1 +1,1 @@
-{"version":3,"file":"global.js","sourceRoot":"/","sources":["typings/global.ts"],"names":[],"mappings":"","sourcesContent":["interface Window {\n  getCleanText: any\n}\n"]}
+{"version":3,"file":"global.js","sourceRoot":"/","sources":["typings/global.ts"],"names":[],"mappings":"","sourcesContent":["interface Window {\n  // TODO: use method interface from utils\n  getCleanText: any\n}\n"]}

@@ -166,7 +166,7 @@ exports.getLinkedinProfileDetails = (page, profileUrl) => tslib_1.__awaiter(void
             const endDateIsPresent = (endDatePart) ? endDatePart.trim().toLowerCase() === 'present' : false;
             const endDate = (endDatePart && !endDateIsPresent) ? yield utils_1.formatDate(endDatePart) : null;
             const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? yield utils_1.getDurationInDays(startDate, endDate) : null;
-            const durationInDaysForPresentDate = (endDateIsPresent) ? yield utils_1.getDurationInDays(startDate, new Date()) : null;
+            const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? yield utils_1.getDurationInDays(startDate, new Date()) : null;
             const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
             const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
             const locationText = (locationElement && locationElement.textContent) ? yield window.getCleanText(locationElement.textContent) : null;

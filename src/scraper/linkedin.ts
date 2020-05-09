@@ -1,5 +1,6 @@
 require('dotenv').config()
 import puppeteer from 'puppeteer';
+import { Location } from '../utils'
 
 import {
   getDurationInDays,
@@ -8,12 +9,6 @@ import {
   getLocationFromText,
   statusLog
 } from '../utils';
-
-interface Location {
-  city: string | null;
-  province: string | null;
-  country: string | null
-}
 
 interface Profile {
   fullName: string;
@@ -29,8 +24,8 @@ interface Experience {
   company: string;
   employmentType: string;
   location: Location | null;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   endDateIsPresent: boolean;
   durationInDays: number | null;
   description: string;
@@ -40,8 +35,8 @@ interface Education {
   schoolName: string;
   degreeName: string;
   fieldOfStudy: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   durationInDays: number | null;
 }
 
@@ -278,7 +273,7 @@ export const getLinkedinProfileDetails = async (page, profileUrl) => {
       const endDate = (endDatePart && !endDateIsPresent) ? await formatDate(endDatePart) : null;
 
       const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? await getDurationInDays(startDate, endDate) : null
-      const durationInDaysForPresentDate = (endDateIsPresent) ? await getDurationInDays(startDate, new Date()) : null
+      const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? await getDurationInDays(startDate, new Date()) : null
       const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
 
       const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
