@@ -214,20 +214,20 @@ export const getLinkedinProfileDetails = async (page, profileUrl) => {
     const url = window.location.href
 
     const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
-    const fullName = (fullNameElement && fullNameElement.textContent) ? await window.getCleanText(fullNameElement.textContent) : null
+    const fullName = (fullNameElement && fullNameElement.textContent) ? window.getCleanText(fullNameElement.textContent) : null
 
     const titleElement = profileSection?.querySelector('h2')
-    const title = (titleElement && titleElement.textContent) ? await window.getCleanText(titleElement.textContent) : null
+    const title = (titleElement && titleElement.textContent) ? window.getCleanText(titleElement.textContent) : null
 
     const locationElement = profileSection?.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
-    const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
-    const location = await getLocationFromText(locationText)
+    const locationText = (locationElement && locationElement.textContent) ? window.getCleanText(locationElement.textContent) : null
+    const location = getLocationFromText(locationText)
 
     const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
     const photo = (photoElement && photoElement.getAttribute('src')) ? photoElement.getAttribute('src') : null
 
     const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
-    const description = (descriptionElement && descriptionElement.textContent) ? await window.getCleanText(descriptionElement.textContent) : null
+    const description = (descriptionElement && descriptionElement.textContent) ? window.getCleanText(descriptionElement.textContent) : null
 
     return {
       fullName,
@@ -244,41 +244,41 @@ export const getLinkedinProfileDetails = async (page, profileUrl) => {
 
   statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
 
-  const experiences: Experience[] = await page.$$eval('#experience-section ul > .ember-view', async (nodes) => {
+  const experiences: Experience[] = await page.$$eval('#experience-section ul > .ember-view', (nodes) => {
     let data: Experience[] = []
 
     // Using a for loop so we can use await inside of it
     for (const node of nodes) {
       const titleElement = node.querySelector('h3');
-      const title = (titleElement && titleElement.textContent) ? await window.getCleanText(titleElement.textContent) : null
+      const title = (titleElement && titleElement.textContent) ? window.getCleanText(titleElement.textContent) : null
 
       const employmentTypeElement = node.querySelector('span.pv-entity__secondary-title');
-      const employmentType = (employmentTypeElement && employmentTypeElement.textContent) ? await window.getCleanText(employmentTypeElement.textContent) : null
+      const employmentType = (employmentTypeElement && employmentTypeElement.textContent) ? window.getCleanText(employmentTypeElement.textContent) : null
 
       const companyElement = node.querySelector('.pv-entity__secondary-title');
       const companyElementClean = companyElement.removeChild(companyElement.querySelector('span'));
-      const company = (companyElementClean && companyElementClean.textContent) ? await window.getCleanText(companyElementClean.textContent) : null
+      const company = (companyElementClean && companyElementClean.textContent) ? window.getCleanText(companyElementClean.textContent) : null
 
       const descriptionElement = node.querySelector('.pv-entity__description');
-      const description = (descriptionElement && descriptionElement.textContent) ? await window.getCleanText(descriptionElement.textContent) : null
+      const description = (descriptionElement && descriptionElement.textContent) ? window.getCleanText(descriptionElement.textContent) : null
 
       const dateRangeElement = node.querySelector('.pv-entity__date-range span:nth-child(2)');
-      const dateRangeText = (dateRangeElement && dateRangeElement.textContent) ? await window.getCleanText(dateRangeElement.textContent) : null
+      const dateRangeText = (dateRangeElement && dateRangeElement.textContent) ? window.getCleanText(dateRangeElement.textContent) : null
 
-      const startDatePart = (dateRangeText) ? await window.getCleanText(dateRangeText.split('–')[0]) : null;
-      const startDate = (startDatePart) ? await formatDate(startDatePart) : null
+      const startDatePart = (dateRangeText) ? window.getCleanText(dateRangeText.split('–')[0]) : null;
+      const startDate = (startDatePart) ? formatDate(startDatePart) : null
 
-      const endDatePart = (dateRangeText) ? await window.getCleanText(dateRangeText.split('–')[1]) : null;
+      const endDatePart = (dateRangeText) ? window.getCleanText(dateRangeText.split('–')[1]) : null;
       const endDateIsPresent = (endDatePart) ? endDatePart.trim().toLowerCase() === 'present' : false;
-      const endDate = (endDatePart && !endDateIsPresent) ? await formatDate(endDatePart) : null;
+      const endDate = (endDatePart && !endDateIsPresent) ? formatDate(endDatePart) : null;
 
-      const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? await getDurationInDays(startDate, endDate) : null
-      const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? await getDurationInDays(startDate, new Date()) : null
+      const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? getDurationInDays(startDate, endDate) : null
+      const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? getDurationInDays(startDate, new Date()) : null
       const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
 
       const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
-      const locationText = (locationElement && locationElement.textContent) ? await window.getCleanText(locationElement.textContent) : null
-      const location = await getLocationFromText(locationText)
+      const locationText = (locationElement && locationElement.textContent) ? window.getCleanText(locationElement.textContent) : null
+      const location = getLocationFromText(locationText)
 
       data.push({
         title,
@@ -308,26 +308,26 @@ export const getLinkedinProfileDetails = async (page, profileUrl) => {
     for (const node of nodes) {
 
       const schoolNameElement = node.querySelector('h3.pv-entity__school-name');
-      const schoolName = (schoolNameElement && schoolNameElement.textContent) ? await window.getCleanText(schoolNameElement.textContent) : null;
+      const schoolName = (schoolNameElement && schoolNameElement.textContent) ? window.getCleanText(schoolNameElement.textContent) : null;
 
       const degreeNameElement = node.querySelector('.pv-entity__degree-name .pv-entity__comma-item');
-      const degreeName = (degreeNameElement && degreeNameElement.textContent) ? await window.getCleanText(degreeNameElement.textContent) : null;
+      const degreeName = (degreeNameElement && degreeNameElement.textContent) ? window.getCleanText(degreeNameElement.textContent) : null;
 
       const fieldOfStudyElement = node.querySelector('.pv-entity__fos .pv-entity__comma-item');
-      const fieldOfStudy = (fieldOfStudyElement && fieldOfStudyElement.textContent) ? await window.getCleanText(fieldOfStudyElement.textContent) : null;
+      const fieldOfStudy = (fieldOfStudyElement && fieldOfStudyElement.textContent) ? window.getCleanText(fieldOfStudyElement.textContent) : null;
 
       // const gradeElement = node.querySelector('.pv-entity__grade .pv-entity__comma-item');
-      // const grade = (gradeElement && gradeElement.textContent) ? await window.getCleanText(fieldOfStudyElement.textContent) : null;
+      // const grade = (gradeElement && gradeElement.textContent) ? window.getCleanText(fieldOfStudyElement.textContent) : null;
 
       const dateRangeElement = node.querySelectorAll('.pv-entity__dates time');
 
-      const startDatePart = (dateRangeElement && dateRangeElement[0] && dateRangeElement[0].textContent) ? await window.getCleanText(dateRangeElement[0].textContent) : null;
-      const startDate = (startDatePart) ? await formatDate(startDatePart) : null
+      const startDatePart = (dateRangeElement && dateRangeElement[0] && dateRangeElement[0].textContent) ? window.getCleanText(dateRangeElement[0].textContent) : null;
+      const startDate = (startDatePart) ? formatDate(startDatePart) : null
 
-      const endDatePart = (dateRangeElement && dateRangeElement[1] && dateRangeElement[1].textContent) ? await window.getCleanText(dateRangeElement[1].textContent) : null;
-      const endDate = (endDatePart) ? await formatDate(endDatePart) : null
+      const endDatePart = (dateRangeElement && dateRangeElement[1] && dateRangeElement[1].textContent) ? window.getCleanText(dateRangeElement[1].textContent) : null;
+      const endDate = (endDatePart) ? formatDate(endDatePart) : null
 
-      const durationInDays = (startDate && endDate) ? await getDurationInDays(startDate, endDate) : null
+      const durationInDays = (startDate && endDate) ? getDurationInDays(startDate, endDate) : null
 
       data.push({
         schoolName,

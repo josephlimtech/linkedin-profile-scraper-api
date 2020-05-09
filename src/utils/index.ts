@@ -20,7 +20,7 @@ export const getDurationInDays = (formattedStartDate: string, formattedEndDate: 
   return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
 
-export const getLocationFromText = async (text: string): Promise<Location | null> => {
+export const getLocationFromText = (text: string): Location | null => {
   // Text is something like: Amsterdam Oud-West, North Holland Province, Netherlands
 
   if (!text) return null
@@ -55,7 +55,7 @@ export const getLocationFromText = async (text: string): Promise<Location | null
   }
 }
 
-export const getCleanText = async (text: string) => {
+export const getCleanText = (text: string) => {
   const regexRemoveMultipleSpaces = / +/g
   const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
 
@@ -72,7 +72,7 @@ export const getCleanText = async (text: string) => {
   return cleanText
 }
 
-export const statusLog = async (section: string, message: string, scraperSessionId?: string | number) => {
+export const statusLog = (section: string, message: string, scraperSessionId?: string | number) => {
   const sessionPart = (scraperSessionId) ? ` (${scraperSessionId})` : ''
   const messagePart = (message) ? `: ${message}` : null
   return console.log(`Scraper (${section})${sessionPart}${messagePart}`)

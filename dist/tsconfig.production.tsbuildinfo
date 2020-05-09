@@ -361,16 +361,20 @@
         "version": "1544ab3b5a57eed886c3bac6e18a65327b1b1caa633941d721530f6493a068d9",
         "signature": "1544ab3b5a57eed886c3bac6e18a65327b1b1caa633941d721530f6493a068d9"
       },
-      "../src/utils.ts": {
-        "version": "c7e54313d2946f2bb34fdbe9df7e8d234d8da0a92dd82b4330f3b7da547ca793",
-        "signature": "315af6196434efa4f1dc9ded2f14f9c884ae867a48aeaa6dcc4d3ec7eeb3a0d7"
+      "../src/utils/index.ts": {
+        "version": "e262bd9beb5daba6245512c200183ae0c3e05294a1d87d5a3033adeb0410e333",
+        "signature": "5f983e591ab25d47251dbebaf4b6e7e43bc1d9722170639c3d0c97ed09921388"
       },
       "../src/scraper/linkedin.ts": {
-        "version": "bfe15d23f52a2c81d5e2f3203943bb1ebcda3bbf1f8ddd40695c53e2215b38a2",
+        "version": "a50337ded7232fc56df6c313f0042bc4aaede86962881c227403d4445a97c9df",
         "signature": "479e1eb5abf102c32972fac5a62a2d354f9f8d3b7738ee45ffec954d9c3990d3"
       },
       "../src/index.ts": {
         "version": "02dc147a2f773d20bdab77f4c40ab3bad69639ce2898546bd5b8ed33a6e6469f",
+        "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+      },
+      "../src/example/server.ts": {
+        "version": "9a2bb19c7c0e0bd011f9241f760f6442440a905e4d5ce1a6b00a323b5ac87e34",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../src/typings/global.ts": {
@@ -1115,7 +1119,7 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/utils.ts": [
+      "../src/utils/index.ts": [
         "../node_modules/moment/ts3.1-typings/moment.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -1124,13 +1128,21 @@
       ],
       "../src/scraper/linkedin.ts": [
         "../node_modules/@types/puppeteer/index.d.ts",
-        "../src/utils.ts",
+        "../src/utils/index.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/index.ts": [
+        "../node_modules/@types/express/index.d.ts",
+        "../src/scraper/linkedin.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/example/server.ts": [
         "../node_modules/@types/express/index.d.ts",
         "../src/scraper/linkedin.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -1861,9 +1873,6 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/utils.ts": [
-        "../node_modules/moment/ts3.1-typings/moment.d.ts"
-      ],
       "../src/scraper/linkedin.ts": [
         "../node_modules/@types/puppeteer/index.d.ts",
         "../src/utils.ts"
@@ -1926,6 +1935,9 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/utils/index.ts": [
+        "../node_modules/moment/ts3.1-typings/moment.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -2019,7 +2031,7 @@
       "../node_modules/@types/puppeteer/devicedescriptors.d.ts",
       "../node_modules/@types/puppeteer/index.d.ts",
       "../node_modules/moment/ts3.1-typings/moment.d.ts",
-      "../src/utils.ts",
+      "../src/index.ts",
       "../src/typings/global.ts",
       "../node_modules/jest-diff/build/cleanupsemantic.d.ts",
       "../node_modules/jest-diff/build/types.d.ts",
@@ -2029,8 +2041,9 @@
       "../node_modules/pretty-format/build/types.d.ts",
       "../node_modules/pretty-format/build/index.d.ts",
       "../node_modules/@types/jest/index.d.ts",
+      "../src/utils/index.ts",
       "../src/scraper/linkedin.ts",
-      "../src/index.ts"
+      "../src/example/server.ts"
     ]
   },
   "version": "3.8.3"

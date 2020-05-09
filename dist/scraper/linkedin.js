@@ -125,16 +125,16 @@ exports.getLinkedinProfileDetails = (page, profileUrl) => tslib_1.__awaiter(void
         const profileSection = document.querySelector('.pv-top-card');
         const url = window.location.href;
         const fullNameElement = profileSection === null || profileSection === void 0 ? void 0 : profileSection.querySelector('.pv-top-card--list li:first-child');
-        const fullName = (fullNameElement && fullNameElement.textContent) ? yield window.getCleanText(fullNameElement.textContent) : null;
+        const fullName = (fullNameElement && fullNameElement.textContent) ? window.getCleanText(fullNameElement.textContent) : null;
         const titleElement = profileSection === null || profileSection === void 0 ? void 0 : profileSection.querySelector('h2');
-        const title = (titleElement && titleElement.textContent) ? yield window.getCleanText(titleElement.textContent) : null;
+        const title = (titleElement && titleElement.textContent) ? window.getCleanText(titleElement.textContent) : null;
         const locationElement = profileSection === null || profileSection === void 0 ? void 0 : profileSection.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child');
-        const locationText = (locationElement && locationElement.textContent) ? yield window.getCleanText(locationElement.textContent) : null;
-        const location = yield utils_1.getLocationFromText(locationText);
+        const locationText = (locationElement && locationElement.textContent) ? window.getCleanText(locationElement.textContent) : null;
+        const location = utils_1.getLocationFromText(locationText);
         const photoElement = (profileSection === null || profileSection === void 0 ? void 0 : profileSection.querySelector('.pv-top-card__photo')) || (profileSection === null || profileSection === void 0 ? void 0 : profileSection.querySelector('.profile-photo-edit__preview'));
         const photo = (photoElement && photoElement.getAttribute('src')) ? photoElement.getAttribute('src') : null;
         const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line');
-        const description = (descriptionElement && descriptionElement.textContent) ? yield window.getCleanText(descriptionElement.textContent) : null;
+        const description = (descriptionElement && descriptionElement.textContent) ? window.getCleanText(descriptionElement.textContent) : null;
         return {
             fullName,
             title,
@@ -146,31 +146,31 @@ exports.getLinkedinProfileDetails = (page, profileUrl) => tslib_1.__awaiter(void
     }));
     utils_1.statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId);
     utils_1.statusLog(logSection, `Parsing experiences data...`, scraperSessionId);
-    const experiences = yield page.$$eval('#experience-section ul > .ember-view', (nodes) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const experiences = yield page.$$eval('#experience-section ul > .ember-view', (nodes) => {
         let data = [];
         for (const node of nodes) {
             const titleElement = node.querySelector('h3');
-            const title = (titleElement && titleElement.textContent) ? yield window.getCleanText(titleElement.textContent) : null;
+            const title = (titleElement && titleElement.textContent) ? window.getCleanText(titleElement.textContent) : null;
             const employmentTypeElement = node.querySelector('span.pv-entity__secondary-title');
-            const employmentType = (employmentTypeElement && employmentTypeElement.textContent) ? yield window.getCleanText(employmentTypeElement.textContent) : null;
+            const employmentType = (employmentTypeElement && employmentTypeElement.textContent) ? window.getCleanText(employmentTypeElement.textContent) : null;
             const companyElement = node.querySelector('.pv-entity__secondary-title');
             const companyElementClean = companyElement.removeChild(companyElement.querySelector('span'));
-            const company = (companyElementClean && companyElementClean.textContent) ? yield window.getCleanText(companyElementClean.textContent) : null;
+            const company = (companyElementClean && companyElementClean.textContent) ? window.getCleanText(companyElementClean.textContent) : null;
             const descriptionElement = node.querySelector('.pv-entity__description');
-            const description = (descriptionElement && descriptionElement.textContent) ? yield window.getCleanText(descriptionElement.textContent) : null;
+            const description = (descriptionElement && descriptionElement.textContent) ? window.getCleanText(descriptionElement.textContent) : null;
             const dateRangeElement = node.querySelector('.pv-entity__date-range span:nth-child(2)');
-            const dateRangeText = (dateRangeElement && dateRangeElement.textContent) ? yield window.getCleanText(dateRangeElement.textContent) : null;
-            const startDatePart = (dateRangeText) ? yield window.getCleanText(dateRangeText.split('–')[0]) : null;
-            const startDate = (startDatePart) ? yield utils_1.formatDate(startDatePart) : null;
-            const endDatePart = (dateRangeText) ? yield window.getCleanText(dateRangeText.split('–')[1]) : null;
+            const dateRangeText = (dateRangeElement && dateRangeElement.textContent) ? window.getCleanText(dateRangeElement.textContent) : null;
+            const startDatePart = (dateRangeText) ? window.getCleanText(dateRangeText.split('–')[0]) : null;
+            const startDate = (startDatePart) ? utils_1.formatDate(startDatePart) : null;
+            const endDatePart = (dateRangeText) ? window.getCleanText(dateRangeText.split('–')[1]) : null;
             const endDateIsPresent = (endDatePart) ? endDatePart.trim().toLowerCase() === 'present' : false;
-            const endDate = (endDatePart && !endDateIsPresent) ? yield utils_1.formatDate(endDatePart) : null;
-            const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? yield utils_1.getDurationInDays(startDate, endDate) : null;
-            const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? yield utils_1.getDurationInDays(startDate, new Date()) : null;
+            const endDate = (endDatePart && !endDateIsPresent) ? utils_1.formatDate(endDatePart) : null;
+            const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? utils_1.getDurationInDays(startDate, endDate) : null;
+            const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? utils_1.getDurationInDays(startDate, new Date()) : null;
             const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
             const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
-            const locationText = (locationElement && locationElement.textContent) ? yield window.getCleanText(locationElement.textContent) : null;
-            const location = yield utils_1.getLocationFromText(locationText);
+            const locationText = (locationElement && locationElement.textContent) ? window.getCleanText(locationElement.textContent) : null;
+            const location = utils_1.getLocationFromText(locationText);
             data.push({
                 title,
                 company,
@@ -184,24 +184,24 @@ exports.getLinkedinProfileDetails = (page, profileUrl) => tslib_1.__awaiter(void
             });
         }
         return data;
-    }));
+    });
     utils_1.statusLog(logSection, `Got experiences data: ${JSON.stringify(experiences)}`, scraperSessionId);
     utils_1.statusLog(logSection, `Parsing education data...`, scraperSessionId);
     const education = yield page.$$eval('#education-section ul > .ember-view', (nodes) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
         let data = [];
         for (const node of nodes) {
             const schoolNameElement = node.querySelector('h3.pv-entity__school-name');
-            const schoolName = (schoolNameElement && schoolNameElement.textContent) ? yield window.getCleanText(schoolNameElement.textContent) : null;
+            const schoolName = (schoolNameElement && schoolNameElement.textContent) ? window.getCleanText(schoolNameElement.textContent) : null;
             const degreeNameElement = node.querySelector('.pv-entity__degree-name .pv-entity__comma-item');
-            const degreeName = (degreeNameElement && degreeNameElement.textContent) ? yield window.getCleanText(degreeNameElement.textContent) : null;
+            const degreeName = (degreeNameElement && degreeNameElement.textContent) ? window.getCleanText(degreeNameElement.textContent) : null;
             const fieldOfStudyElement = node.querySelector('.pv-entity__fos .pv-entity__comma-item');
-            const fieldOfStudy = (fieldOfStudyElement && fieldOfStudyElement.textContent) ? yield window.getCleanText(fieldOfStudyElement.textContent) : null;
+            const fieldOfStudy = (fieldOfStudyElement && fieldOfStudyElement.textContent) ? window.getCleanText(fieldOfStudyElement.textContent) : null;
             const dateRangeElement = node.querySelectorAll('.pv-entity__dates time');
-            const startDatePart = (dateRangeElement && dateRangeElement[0] && dateRangeElement[0].textContent) ? yield window.getCleanText(dateRangeElement[0].textContent) : null;
-            const startDate = (startDatePart) ? yield utils_1.formatDate(startDatePart) : null;
-            const endDatePart = (dateRangeElement && dateRangeElement[1] && dateRangeElement[1].textContent) ? yield window.getCleanText(dateRangeElement[1].textContent) : null;
-            const endDate = (endDatePart) ? yield utils_1.formatDate(endDatePart) : null;
-            const durationInDays = (startDate && endDate) ? yield utils_1.getDurationInDays(startDate, endDate) : null;
+            const startDatePart = (dateRangeElement && dateRangeElement[0] && dateRangeElement[0].textContent) ? window.getCleanText(dateRangeElement[0].textContent) : null;
+            const startDate = (startDatePart) ? utils_1.formatDate(startDatePart) : null;
+            const endDatePart = (dateRangeElement && dateRangeElement[1] && dateRangeElement[1].textContent) ? window.getCleanText(dateRangeElement[1].textContent) : null;
+            const endDate = (endDatePart) ? utils_1.formatDate(endDatePart) : null;
+            const durationInDays = (startDate && endDate) ? utils_1.getDurationInDays(startDate, endDate) : null;
             data.push({
                 schoolName,
                 degreeName,
