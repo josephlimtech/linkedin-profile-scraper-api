@@ -9,6 +9,12 @@ describe('utils', () => {
 
       expect(formattedDate).toBe('2020-12-31T01:11:00+01:00')
     })
+
+    it('should return the Present date', () => {
+      const formattedDate = formatDate('Present');
+
+      expect(formattedDate).toBeTruthy()
+    })
   })
 
   describe('getDurationInDays()', () => {
