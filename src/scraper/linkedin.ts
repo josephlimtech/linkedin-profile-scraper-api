@@ -1,6 +1,7 @@
 require('dotenv').config()
 
-import puppeteer, { Page } from 'puppeteer'
+import puppeteer, { Page, Browser } from 'puppeteer'
+import treeKill from 'tree-kill';
 
 import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog } from '../utils'
 
@@ -100,9 +101,10 @@ async function autoScroll(page: Page) {
 
 export default class LinkedInProfileScraper {
   private readonly sessionCookieValue: string = '';
-  // private readonly autoClose: ScraperOptions['autoClose'];
+  private readonly autoClose: ScraperOptions['autoClose'];
   private readonly userAgent: string = '';
   private page: Page | null = null;
+  private browser: Browser | null = null;
 
   constructor(options: ScraperOptions) {
     this.sessionCookieValue = options.sessionCookieValue;
@@ -111,7 +113,7 @@ export default class LinkedInProfileScraper {
       throw new Error('Error during setup. A "sessionCookieValue" is required.');
     }
 
-    // this.autoClose = options.autoClose || true;
+    this.autoClose = !!options.autoClose;
 
     // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
     this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
@@ -120,14 +122,15 @@ export default class LinkedInProfileScraper {
   }
 
   private setup = async () => {
-    try {
-      // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
-      const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
-      const logSection = 'setup'
+    const logSection = 'setup'
 
+    // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
+    const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
+
+    try {
       statusLog(logSection, 'Launching puppeteer in the background...')
 
-      const browser = await puppeteer.launch({
+      this.browser = await puppeteer.launch({
         headless: true,
         args: [
           '--no-sandbox',
@@ -150,11 +153,11 @@ export default class LinkedInProfileScraper {
 
       statusLog(logSection, 'Puppeteer launched!')
 
-      this.page = await browser.newPage()
+      this.page = await this.browser.newPage()
 
       // Use already open page
       // This makes sure we don't have an extra open tab consuming memory
-      const firstPage = (await browser.pages())[0];
+      const firstPage = (await this.browser.pages())[0];
       await firstPage.close();
 
       // Method to create a faster Page
@@ -215,15 +218,61 @@ export default class LinkedInProfileScraper {
 
       return {
         page: this.page,
-        browser
+        browser: this.browser
       }
     } catch (err) {
       throw new Error(err)
     }
   };
 
+  public close = (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      const loggerPrefix = 'close';
+
+      if (this.page) {
+        try {
+          statusLog(loggerPrefix, 'Closing page...');
+          await this.page.close();
+          statusLog(loggerPrefix, 'Closed page!');
+        } catch (err) {
+          reject(err)
+        }
+      }
+
+      if (this.browser) {
+        try {
+          statusLog(loggerPrefix, 'Closing browser...');
+          await this.browser.close();
+          statusLog(loggerPrefix, 'Closed browser!');
+
+          const browserProcessPid = this.browser.process().pid;
+
+          // Completely kill the browser process to prevent zombie processes
+          // https://docs.browserless.io/blog/2019/03/13/more-observations.html#tip-2-when-you-re-done-kill-it-with-fire
+          if (browserProcessPid) {
+            statusLog(loggerPrefix, `Killing browser process pid: ${browserProcessPid}...`);
+            
+            treeKill(browserProcessPid, 'SIGKILL', (err) => {
+              if (err) {
+                return reject(`Failed to kill browser process pid: ${browserProcessPid}`);
+              }
+
+              statusLog(loggerPrefix, `Killed browser pid: ${browserProcessPid} Closed browser.`);
+              resolve()
+            });
+          }
+        } catch (err) {
+          reject(err);
+        }
+      }
+
+      return resolve()
+    })
+
+  }
+
   public checkIfLoggedIn = async () => {
-    const logSection = 'authentication';
+    const logSection = 'checkIfLoggedIn';
 
     if (!this.page) {
       throw new Error('Page is not set.')
@@ -245,7 +294,7 @@ export default class LinkedInProfileScraper {
   };
 
   public run = async (profileUrl: string) => {
-    const logSection = 'scraping'
+    const logSection = 'run'
 
     const scraperSessionId = new Date().getTime();
 
@@ -508,7 +557,12 @@ export default class LinkedInProfileScraper {
     statusLog(logSection, `Got skills data: ${JSON.stringify(skills)}`, scraperSessionId)
 
     statusLog(logSection, `Done! Returned profile details for: ${profileUrl}`, scraperSessionId)
-
+    
+    if (this.autoClose) {
+      statusLog(logSection, 'Auto closing...')
+      await this.close()
+    }
+  
     return {
       userProfile,
       experiences,

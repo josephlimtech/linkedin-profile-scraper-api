@@ -14,7 +14,7 @@ console.log(`Server setup: Setting up...`);
 
     const scraper = new LinkedInProfileScraper({
       sessionCookieValue: `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
-      // autoClose: true
+      autoClose: true
     })
 
     // An endpoint to determine if the scraper is still loggedin into LinkedIn
