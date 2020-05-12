@@ -25,7 +25,7 @@ import LinkedInProfileScraper from 'linkedin-profile-scraper';
 
 (async() => {
   const scraper = new LinkedInProfileScraper({
-    sessionCookieValue: 'YOUR_LINKEDIN_SESSION_COOKIE_VALUE',
+    sessionCookieValue: 'LI_AT_COOKIE_VALUE',
     keepAlive: false
   });
 
