@@ -1,4 +1,5 @@
 interface Window {
   // TODO: use method interface from utils
-  getCleanText: any
+  getCleanText: any,
+  getLocationFromText: any
 }

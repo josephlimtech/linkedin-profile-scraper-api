@@ -2,7 +2,7 @@ require('dotenv').config();
 import express from 'express';
 const app = express();
 const port = process.env.PORT || 3000;
-import { getLinkedinProfileDetails, setupScraper, checkIfLoggedIn } from './scraper/linkedin';
+import LinkedInProfileScraper from './scraper/linkedin';
 
 console.log(`Server setup: Setting up...`);
 
@@ -10,11 +10,16 @@ console.log(`Server setup: Setting up...`);
   try {
     // Setup the headless browser before the requests, so we can re-use the Puppeteer session on each request
     // Resulting in fast scrapes because we don't have to launch a headless browser anymore
-    const { page } = await setupScraper()
+    // const { page } = await setupScraper()
+
+    const scraper = new LinkedInProfileScraper({
+      sessionCookieValue: `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
+      // autoClose: true
+    })
 
     // An endpoint to determine if the scraper is still loggedin into LinkedIn
     app.get('/status', async (req, res) => {
-      const isLoggedIn = await checkIfLoggedIn(page)
+      const isLoggedIn = await scraper.checkIfLoggedIn()
 
       if (isLoggedIn) {
         res.json({ status: 'success', message: 'Still logged in into LinkedIn.' })
@@ -27,7 +32,7 @@ console.log(`Server setup: Setting up...`);
       const urlToScrape = req.query.url as string;
 
       if (urlToScrape?.includes('linkedin.com/')) {
-        const linkedinProfileDetails = await getLinkedinProfileDetails(page, urlToScrape)
+        const linkedinProfileDetails = await scraper.run(urlToScrape)
         res.json(linkedinProfileDetails)
       } else {
         res.json({
