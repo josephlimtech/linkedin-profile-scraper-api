@@ -16,17 +16,24 @@ All dates are formatted to a generic format.
 ## Getting started
 In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
-### Setup
-1. Clone this repo.
-2. Run `npm install`.
-3. Leave your terminal and use your browser to signin into LinkedIn.com with the account you want to use for scraping.
-4. After login, open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
-5. Create a `.env` file in the root of this project
-6. Fill it with `LINKEDIN_SESSION_COOKIE_VALUE="the_value_from_step_2"`
+First, open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
 
-### Starting
-1. After the setup, run `npm start`
-2. Get a LinkedIn profile, like: http://localhost:3000/?url=https://www.linkedin.com/in/barackobama/
+```typescript
+import LinkedInProfileScraper from 'linkedin-profile-scraper';
+
+(async() => {
+  const scraper = new LinkedInProfileScraper({
+    sessionCookieValue: 'YOUR_LINKEDIN_SESSION_COOKIE_VALUE,
+    keepAlive: false
+  });
+
+  const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
+  
+  console.log(result)
+})()
+```
+
+See `src/examples` for more examples.
 
 Example response:
 
