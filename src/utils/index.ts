@@ -1,7 +1,8 @@
 import moment from 'moment';
 import { Location } from '../scraper/linkedin';
+import { Page } from 'puppeteer';
 
-export const formatDate = (date: moment.MomentInput): string => {
+export const formatDate = (date: moment.MomentInput | string): string => {
   if (date === 'Present') {
     return moment().format()
   }
@@ -50,7 +51,7 @@ export const getLocationFromText = (text: string): Location | null => {
   }
 }
 
-export const getCleanText = (text: string) => {
+export const getCleanText = (text: string | null) => {
   const regexRemoveMultipleSpaces = / +/g
   const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
 
@@ -73,3 +74,21 @@ export const statusLog = (section: string, message: string, scraperSessionId?: s
   return console.log(`Scraper (${section})${sessionPart}${messagePart}`)
 }
 
+export const autoScroll = async (page: Page) => {
+  await page.evaluate(async () => {
+    await new Promise((resolve, reject) => {
+      var totalHeight = 0;
+      var distance = 500;
+      var timer = setInterval(() => {
+        var scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 100);
+    });
+  });
+}
