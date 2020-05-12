@@ -35,7 +35,7 @@ import LinkedInProfileScraper from 'linkedin-profile-scraper';
 
 See `src/examples` for more examples.
 
-Set `keepAlive` to `true` to keep the Puppeteer running in the background for faster recurring scrapes. This will keep your memory usage high.
+Set `keepAlive` to `true` to keep Puppeteer running in the background for faster recurring scrapes. This will keep your memory usage high as Puppeteer will sit idle in the background.
 
 By default the scraper will close after a successful scrape. Freeing up your memory.
 
