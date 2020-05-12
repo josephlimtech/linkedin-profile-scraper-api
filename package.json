@@ -4,7 +4,7 @@
   "description": "LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured LinkedIn public profile data in JSON format.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/index.ts",
+    "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/examples/server.ts",
     "build": "npx tsc -p tsconfig.production.json",
     "test:watch": "NODE_ENV=test jest --watch --coverage",
     "test": "NODE_ENV=test jest --silent --maxWorkers=4 --coverage"
