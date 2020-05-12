@@ -14,16 +14,16 @@ This scraper will extract publicly available data:
 All dates are formatted to a generic format.
 
 ## Getting started
-In order to scrape LinkedIn profiles, we need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
+In order to scrape LinkedIn profiles, you need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
-First, open your browser's Dev Tools and find the cookie with the name `li_at`. Remember the value of that cookie.
+Then, login to LinkedIn with that new account and open your browser's Dev Tools to find the cookie with the name `li_at`. Remember the value of that cookie.
 
 ```typescript
 import LinkedInProfileScraper from 'linkedin-profile-scraper';
 
 (async() => {
   const scraper = new LinkedInProfileScraper({
-    sessionCookieValue: 'YOUR_LINKEDIN_SESSION_COOKIE_VALUE,
+    sessionCookieValue: 'YOUR_LINKEDIN_SESSION_COOKIE_VALUE',
     keepAlive: false
   });
 
@@ -34,6 +34,10 @@ import LinkedInProfileScraper from 'linkedin-profile-scraper';
 ```
 
 See `src/examples` for more examples.
+
+Set `keepAlive` to `true` to keep the Puppeteer running in the background for faster recurring scrapes. This will keep your memory usage high.
+
+By default the scraper will close after a successful scrape. Freeing up your memory.
 
 Example response:
 
