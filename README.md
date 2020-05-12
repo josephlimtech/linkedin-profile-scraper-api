@@ -17,7 +17,7 @@ All dates are formatted to a generic format.
 In order to scrape LinkedIn profiles, you need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
 1. Create a new account on LinkedIn, or use one you already have
-2. Login to that account
+2. Login to that account using your browser
 3. Open your browser's Dev Tools to find the cookie with the name `li_at`. Use that value for `sessionCookieValue` when setting up the scraper.
 
 ```typescript
@@ -37,11 +37,12 @@ import LinkedInProfileScraper from 'linkedin-profile-scraper';
 
 See `src/examples` for more examples.
 
+## Faster recurring scrapes
 Set `keepAlive` to `true` to keep Puppeteer running in the background for faster recurring scrapes. This will keep your memory usage high as Puppeteer will sit idle in the background.
 
 By default the scraper will close after a successful scrape. Freeing up your memory.
 
-Example response:
+## Example response
 
 ```json
 {
