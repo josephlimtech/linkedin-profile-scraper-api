@@ -584,6 +584,9 @@ export default class LinkedInProfileScraper {
     if (!this.keepAlive) {
       statusLog(logSection, 'Not keeping the session alive.')
       await this.close()
+      statusLog(logSection, 'Done. Puppeteer is closed.')
+    } else {
+      statusLog(logSection, 'Done. Puppeteer is being kept alive in memory.')
     }
 
     return {
