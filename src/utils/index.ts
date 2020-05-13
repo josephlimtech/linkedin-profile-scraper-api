@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Location } from '../scraper/linkedin';
+import { Location } from '../index';
 import { Page } from 'puppeteer';
 
 export const formatDate = (date: moment.MomentInput | string): string => {
