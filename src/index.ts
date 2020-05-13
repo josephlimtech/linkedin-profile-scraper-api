@@ -109,6 +109,12 @@ interface ScraperOptions {
    * Default: `10000` (10 seconds)
    */
   timeout?: number;
+  /**
+   * Start the scraper in headless mode, or not.
+   * 
+   * Default: `true`
+   */
+  headless?: boolean;
 }
 
 async function autoScroll(page: Page) {
@@ -135,6 +141,7 @@ export default class LinkedInProfileScraper {
   private readonly keepAlive: boolean;
   private readonly userAgent: string = '';
   private readonly timeout: number;
+  private readonly headless: boolean;
 
   private page: Page | null = null;
   private browser: Browser | null = null;
@@ -159,6 +166,8 @@ export default class LinkedInProfileScraper {
     // Defaults to: 10000
     this.timeout = options.timeout === undefined ? 10000 : options.timeout;
 
+    this.headless = options.headless === undefined ? true : options.headless;
+
     this.setup()
   }
 
@@ -169,11 +178,12 @@ export default class LinkedInProfileScraper {
     const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
 
     try {
-      statusLog(logSection, 'Launching puppeteer in the background...')
+      statusLog(logSection, `Launching puppeteer in the ${this.headless ? 'background' : 'foreground'}...`)
 
       this.browser = await puppeteer.launch({
-        headless: true,
+        headless: this.headless,
         args: [
+          ...(this.headless ? '---single-process' : '---start-maximized'),
           '--no-sandbox',
           '--disable-setuid-sandbox',
           "--proxy-server='direct://",
@@ -189,6 +199,36 @@ export default class LinkedInProfileScraper {
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
           '--disable-web-security',
+          '--autoplay-policy=user-gesture-required',
+          '--disable-background-networking',
+          '--disable-breakpad',
+          '--disable-client-side-phishing-detection',
+          '--disable-component-update',
+          '--disable-default-apps',
+          '--disable-domain-reliability',
+          '--disable-extensions',
+          '--disable-features=AudioServiceOutOfProcess',
+          '--disable-hang-monitor',
+          '--disable-ipc-flooding-protection',
+          '--disable-notifications',
+          '--disable-offer-store-unmasked-wallet-cards',
+          '--disable-popup-blocking',
+          '--disable-print-preview',
+          '--disable-prompt-on-repost',
+          '--disable-speech-api',
+          '--disable-sync',
+          '--disk-cache-size=33554432',
+          '--hide-scrollbars',
+          '--ignore-gpu-blacklist',
+          '--metrics-recording-only',
+          '--mute-audio',
+          '--no-default-browser-check',
+          '--no-first-run',
+          '--no-pings',
+          '--no-zygote',
+          '--password-store=basic',
+          '--use-gl=swiftshader',
+          '--use-mock-keychain'
         ],
         timeout: this.timeout
       })
@@ -213,11 +253,13 @@ export default class LinkedInProfileScraper {
 
       statusLog(logSection, `Blocking the following resources: ${blockedResources.join(', ')}`)
 
+      // A list of hostnames that are trackers
+      // By blocking those requests we can speed up the crawling
+      // This is kinda what a normal adblocker does, but really simple
       const blockedHosts = this.getBlockedHosts();
       const blockedResourcesByHost = ['script', 'xhr', 'fetch', 'document']
 
       statusLog(logSection, `Should block scripts from ${Object.keys(blockedHosts).length} unwanted hosts to speed up the crawling.`);
-
 
       // Block loading of resources, like images and css, we dont need that
       await this.page.setRequestInterception(true);
@@ -258,7 +300,8 @@ export default class LinkedInProfileScraper {
       statusLog(logSection, 'Browsing to LinkedIn.com in the background using a headless browser...')
 
       await this.page.goto('https://www.linkedin.com/', {
-        waitUntil: 'domcontentloaded'
+        waitUntil: 'domcontentloaded',
+        timeout: this.timeout
       })
 
       statusLog(logSection, 'Checking if we are logged in successfully...')
@@ -405,7 +448,10 @@ export default class LinkedInProfileScraper {
     statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
     await this.page.goto(profileUrl, {
-      waitUntil: 'domcontentloaded'
+      // Use "networkidl2" here and not "domcontentloaded". 
+      // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
+      waitUntil: 'networkidle2',
+      timeout: this.timeout
     });
 
     statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)

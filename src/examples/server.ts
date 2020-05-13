@@ -8,7 +8,7 @@ const app = express();
 // Setup environment variables to fill the sessionCookieValue
 const scraper = new LinkedInProfileScraper({
   sessionCookieValue: `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
-  keepAlive: false,
+  keepAlive: true,
 })
 
 // Usage: http://localhost:3000/?url=https://www.linkedin.com/in/jvandenaardweg/
