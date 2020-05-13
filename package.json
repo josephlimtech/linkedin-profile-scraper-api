@@ -7,7 +7,7 @@
     "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/examples/server.ts",
     "build": "npx tsc -p tsconfig.production.json",
     "test:watch": "NODE_ENV=test jest --watch --coverage",
-    "test": "NODE_ENV=test jest --silent --maxWorkers=4 --coverage",
+    "test": "NODE_ENV=test jest --coverage",
     "update": "npx npm-check --update"
   },
   "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
@@ -34,5 +34,20 @@
     "tslib": "^1.12.0",
     "typescript": "^3.9.2",
     "typescript-tslint-plugin": "^0.5.5"
+  },
+  "jest": {
+    "globals": {
+      "NODE_ENV": "test"
+    },
+    "testEnvironment": "node",
+    "setupFiles": ["dotenv/config"],
+    "roots": ["<rootDir>/src"],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
+    "moduleFileExtensions": ["ts", "js", "json", "node"],
+    "collectCoverageFrom": ["**/*.{ts,js,jsx,json,node}", "!**/node_modules/**", "!**/typings/**", "!**/integration/**"],
+    "testPathIgnorePatterns": [".e2e.test.ts"]
   }
 }
