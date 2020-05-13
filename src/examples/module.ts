@@ -10,8 +10,8 @@ import LinkedInProfileScraper from '../index';
 
   const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
   
-  // When keepAlive: true, you can manually close session using the method below.
-  // This will free up your memory, otherwise Puppeteer will sit idle in the background consuming memory.
+  // When keepAlive: true, you can manually close the session using the method below.
+  // This will free up your system's memory. Otherwise Puppeteer will sit idle in the background consuming memory.
   // await scraper.close()
   
   console.log(result)
