@@ -135,7 +135,7 @@ export default class LinkedInProfileScraper {
       throw new Error('Error during setup. A "sessionCookieValue" is required.');
     }
 
-    // Defaults to true
+    // Defaults to: false
     this.keepAlive = options.keepAlive === undefined ? false : options.keepAlive;
 
     // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
