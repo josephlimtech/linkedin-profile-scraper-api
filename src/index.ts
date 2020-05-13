@@ -3,7 +3,9 @@ require('dotenv').config()
 import puppeteer, { Page, Browser } from 'puppeteer'
 import treeKill from 'tree-kill';
 
-import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog } from './utils'
+import blockedHostsList from './blocked-hosts';
+
+import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog, getHostname } from './utils'
 
 export interface Location {
   city: string | null;
@@ -211,15 +213,29 @@ export default class LinkedInProfileScraper {
 
       statusLog(logSection, `Blocking the following resources: ${blockedResources.join(', ')}`)
 
+      const blockedHosts = this.getBlockedHosts();
+      const blockedResourcesByHost = ['script', 'xhr', 'fetch', 'document']
+
+      statusLog(logSection, `Should block scripts from ${Object.keys(blockedHosts).length} unwanted hosts to speed up the crawling.`);
+
+
       // Block loading of resources, like images and css, we dont need that
       await this.page.setRequestInterception(true);
 
       this.page.on('request', (req) => {
         if (blockedResources.includes(req.resourceType())) {
-          req.abort()
-        } else {
-          req.continue()
+          return req.abort()
         }
+
+        const hostname = getHostname(req.url());
+
+        // Block all script requests from certain host names
+        if (blockedResourcesByHost.includes(req.resourceType()) && hostname && blockedHosts[hostname] === true) {
+          statusLog('blocked script', `${req.resourceType()}: ${hostname}: ${req.url()}`);
+          return req.abort();
+        }
+
+        return req.continue()
       })
 
       await this.page.setUserAgent(this.userAgent)
@@ -264,6 +280,42 @@ export default class LinkedInProfileScraper {
       throw new Error(err)
     }
   };
+
+  /**
+   * Method to block know hosts that have some kind of tracking.
+   * By blocking those hosts we speed up the crawling.
+   * 
+   * More info: http://winhelp2002.mvps.org/hosts.htm
+   */
+  private getBlockedHosts = (): object => {
+    const blockedHostsArray = blockedHostsList.split('\n');
+
+    let blockedHostsObject = blockedHostsArray.reduce((prev, curr) => {
+      const frags = curr.split(' ');
+
+      if (frags.length > 1 && frags[0] === '0.0.0.0') {
+        prev[frags[1].trim()] = true;
+      }
+
+      return prev;
+    }, {});
+
+    blockedHostsObject = {
+      ...blockedHostsObject,
+      'static.chartbeat.com': true,
+      'scdn.cxense.com': true,
+      'api.cxense.com': true,
+      'www.googletagmanager.com': true,
+      'connect.facebook.net': true,
+      'platform.twitter.com': true,
+      'tags.tiqcdn.com': true,
+      'dev.visualwebsiteoptimizer.com': true,
+      'smartlock.google.com': true,
+      'cdn.embedly.com': true
+    }
+
+    return blockedHostsObject;
+  }
 
   public close = (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
