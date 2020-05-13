@@ -92,3 +92,7 @@ export const autoScroll = async (page: Page) => {
     });
   });
 }
+
+export const getHostname = (url: string) => {
+  return new URL(url).hostname;
+};
