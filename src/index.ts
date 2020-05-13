@@ -100,6 +100,13 @@ interface ScraperOptions {
    * Default: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36`
    */
   userAgent?: string;
+  /**
+   * Use a custom timeout to set the maximum time you want to wait for the scraper 
+   * to do his job.
+   * 
+   * Default: `10000` (10 seconds)
+   */
+  timeout?: number;
 }
 
 async function autoScroll(page: Page) {
@@ -125,6 +132,8 @@ export default class LinkedInProfileScraper {
   private readonly sessionCookieValue: string = '';
   private readonly keepAlive: boolean;
   private readonly userAgent: string = '';
+  private readonly timeout: number;
+
   private page: Page | null = null;
   private browser: Browser | null = null;
 
@@ -135,11 +144,18 @@ export default class LinkedInProfileScraper {
       throw new Error('Error during setup. A "sessionCookieValue" is required.');
     }
 
+    if (options.timeout && typeof options.timeout !== 'number') {
+      throw new Error('Error during setup. Timeout needs to be a number.');
+    }
+
     // Defaults to: false
     this.keepAlive = options.keepAlive === undefined ? false : options.keepAlive;
 
     // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
     this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+
+    // Defaults to: 10000
+    this.timeout = options.timeout === undefined ? 10000 : options.timeout;
 
     this.setup()
   }
@@ -171,7 +187,8 @@ export default class LinkedInProfileScraper {
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
           '--disable-web-security',
-        ]
+        ],
+        timeout: this.timeout
       })
 
       statusLog(logSection, 'Puppeteer launched!')
