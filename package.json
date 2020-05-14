@@ -9,7 +9,7 @@
     "test:watch": "NODE_ENV=test jest --watch --coverage",
     "test": "NODE_ENV=test jest --coverage",
     "update": "npx npm-check --update",
-    "release": "release-it --no-npm"
+    "release": "release-it"
   },
   "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
   "repository": {
