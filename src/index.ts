@@ -187,9 +187,6 @@ class LinkedInProfileScraper {
   public setup = async () => {
     const logSection = 'setup'
 
-    // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
-    const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
-
     try {
       statusLog(logSection, `Launching puppeteer in the ${this.headless ? 'background' : 'foreground'}...`)
 
@@ -248,7 +245,52 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, 'Puppeteer launched!')
 
-      this.page = await this.browser.newPage()
+      const page = await this.createPage();
+
+      statusLog(logSection, 'Browsing to LinkedIn.com in the background using a headless browser...')
+
+      await page.goto('https://www.linkedin.com/', {
+        waitUntil: 'domcontentloaded',
+        timeout: this.timeout
+      })
+
+      statusLog(logSection, 'Checking if we are logged in successfully...')
+
+      const isLoggedIn = await this.checkIfLoggedIn(page);
+
+      if (!isLoggedIn) {
+        statusLog(logSection, 'Error! Scraper not logged in into LinkedIn')
+        throw new Error('Scraper not logged in into LinkedIn')
+      }
+
+      statusLog(logSection, 'Done!')
+
+      return {
+        page,
+        browser: this.browser
+      }
+    } catch (err) {
+      // Kill Puppeteer
+      await this.close();
+
+      statusLog(logSection, 'An error occurred during setup.')
+
+      throw err
+    }
+  };
+
+  private createPage = async (): Promise<Page> => {
+    const logSection = 'setup page'
+
+    if (!this.browser) {
+      throw new Error('Browser not set.');
+    }
+
+    // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn
+    const blockedResources = ['image', 'media', 'font', 'texttrack', 'object', 'beacon', 'csp_report', 'imageset'];
+
+    try {
+      const page = await this.browser.newPage()
 
       // Use already open page
       // This makes sure we don't have an extra open tab consuming memory
@@ -257,8 +299,8 @@ class LinkedInProfileScraper {
 
       // Method to create a faster Page
       // From: https://github.com/shirshak55/scrapper-tools/blob/master/src/fastPage/index.ts#L113
-      const session = await this.page.target().createCDPSession()
-      await this.page.setBypassCSP(true)
+      const session = await page.target().createCDPSession()
+      await page.setBypassCSP(true)
       await session.send('Page.enable');
       await session.send('Page.setWebLifecycleState', {
         state: 'active',
@@ -275,9 +317,9 @@ class LinkedInProfileScraper {
       statusLog(logSection, `Should block scripts from ${Object.keys(blockedHosts).length} unwanted hosts to speed up the crawling.`);
 
       // Block loading of resources, like images and css, we dont need that
-      await this.page.setRequestInterception(true);
+      await page.setRequestInterception(true);
 
-      this.page.on('request', (req) => {
+      page.on('request', (req) => {
         if (blockedResources.includes(req.resourceType())) {
           return req.abort()
         }
@@ -293,16 +335,16 @@ class LinkedInProfileScraper {
         return req.continue()
       })
 
-      await this.page.setUserAgent(this.userAgent)
+      await page.setUserAgent(this.userAgent)
 
-      await this.page.setViewport({
+      await page.setViewport({
         width: 1200,
         height: 720
       })
 
       statusLog(logSection, `Setting session cookie using cookie: ${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`)
 
-      await this.page.setCookie({
+      await page.setCookie({
         'name': 'li_at',
         'value': this.sessionCookieValue,
         'domain': '.www.linkedin.com'
@@ -310,33 +352,14 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, 'Session cookie set!')
 
-      statusLog(logSection, 'Browsing to LinkedIn.com in the background using a headless browser...')
-
-      await this.page.goto('https://www.linkedin.com/', {
-        waitUntil: 'domcontentloaded',
-        timeout: this.timeout
-      })
-
-      statusLog(logSection, 'Checking if we are logged in successfully...')
-
-      const isLoggedIn = await this.checkIfLoggedIn();
-
-      if (!isLoggedIn) {
-        statusLog(logSection, 'Error! Scraper not logged in into LinkedIn')
-        throw new Error('Scraper not logged in into LinkedIn')
-      }
-
       statusLog(logSection, 'Done!')
 
-      return {
-        page: this.page,
-        browser: this.browser
-      }
+      return page;
     } catch (err) {
       // Kill Puppeteer
       await this.close();
 
-      statusLog(logSection, 'An error occurred during setup.')
+      statusLog(logSection, 'An error occurred during page setup.')
 
       throw err
     }
@@ -378,14 +401,14 @@ class LinkedInProfileScraper {
     return blockedHostsObject;
   }
 
-  public close = (): Promise<void> => {
+  public close = (page?: Page): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       const loggerPrefix = 'close';
 
-      if (this.page) {
+      if (page) {
         try {
           statusLog(loggerPrefix, 'Closing page...');
-          await this.page.close();
+          await page.close();
           statusLog(loggerPrefix, 'Closed page!');
         } catch (err) {
           reject(err)
@@ -424,16 +447,16 @@ class LinkedInProfileScraper {
 
   }
 
-  public checkIfLoggedIn = async () => {
+  public checkIfLoggedIn = async (page: Page) => {
     const logSection = 'checkIfLoggedIn';
 
-    if (!this.page) {
+    if (!page) {
       throw new Error('Page is not set.')
     }
 
     statusLog(logSection, 'Check if we are still logged in...')
 
-    const isLoggedIn = await this.page.$('#login-email') === null
+    const isLoggedIn = await page.$('#login-email') === null
 
     if (isLoggedIn) {
       statusLog(logSection, 'All good. We are still logged in.')
@@ -451,8 +474,8 @@ class LinkedInProfileScraper {
 
     const scraperSessionId = new Date().getTime();
 
-    if (!this.page) {
-      throw new Error('Page is not set.')
+    if (!this.browser) {
+      throw new Error('Browser is not set.')
     }
 
     if (!profileUrl) {
@@ -464,9 +487,12 @@ class LinkedInProfileScraper {
     }
 
     try {
+      // Eeach run has it's own page
+      const page = await this.createPage();
+
       statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
-      await this.page.goto(profileUrl, {
+      await page.goto(profileUrl, {
         // Use "networkidl2" here and not "domcontentloaded". 
         // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
         waitUntil: 'networkidle2',
@@ -477,7 +503,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, 'Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...', scraperSessionId)
 
-      await autoScroll(this.page);
+      await autoScroll(page);
 
       statusLog(logSection, 'Parsing data...', scraperSessionId)
 
@@ -494,19 +520,19 @@ class LinkedInProfileScraper {
       statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
       for (const buttonSelector of expandButtonsSelectors) {
-        if (await this.page.$(buttonSelector) !== null) {
+        if (await page.$(buttonSelector) !== null) {
           statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-          await this.page.click(buttonSelector);
+          await page.click(buttonSelector);
         }
       }
 
       // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
-      await this.page.waitFor(100);
+      await page.waitFor(100);
 
       statusLog(logSection, 'Expanding all descriptions by clicking their "See more" buttons', scraperSessionId)
 
       for (const seeMoreButtonSelector of seeMoreButtonsSelectors) {
-        const buttons = await this.page.$$(seeMoreButtonSelector)
+        const buttons = await page.$$(seeMoreButtonSelector)
 
         for (const button of buttons) {
           if (button) {
@@ -518,7 +544,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
-      const rawUserProfileData: RawProfile = await this.page.evaluate(() => {
+      const rawUserProfileData: RawProfile = await page.evaluate(() => {
         const profileSection = document.querySelector('.pv-top-card')
 
         const url = window.location.href
@@ -562,7 +588,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
 
-      const rawExperiencesData: RawExperience[] = await this.page.$$eval('#experience-section ul > .ember-view', (nodes) => {
+      const rawExperiencesData: RawExperience[] = await page.$$eval('#experience-section ul > .ember-view', (nodes) => {
         let data: RawExperience[] = []
 
         // Using a for loop so we can use await inside of it
@@ -574,7 +600,7 @@ class LinkedInProfileScraper {
           const employmentType = employmentTypeElement?.textContent || null
 
           const companyElement = node.querySelector('.pv-entity__secondary-title');
-          const companyElementClean = companyElement?.removeChild(companyElement.querySelector('span') as Node);
+          const companyElementClean = companyElement?.querySelector('span') && companyElement?.removeChild(companyElement.querySelector('span') as Node);
           const company = companyElementClean?.textContent || null
 
           const descriptionElement = node.querySelector('.pv-entity__description');
@@ -637,7 +663,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, `Parsing education data...`, scraperSessionId)
 
-      const rawEducationData: RawEducation[] = await this.page.$$eval('#education-section ul > .ember-view', (nodes) => {
+      const rawEducationData: RawEducation[] = await page.$$eval('#education-section ul > .ember-view', (nodes) => {
         // Note: the $$eval context is the browser context.
         // So custom methods you define in this file are not available within this $$eval.
         let data: RawEducation[] = []
@@ -696,7 +722,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, `Parsing skills data...`, scraperSessionId)
 
-      const skills: Skill[] = await this.page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
+      const skills: Skill[] = await page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
         // Note: the $$eval context is the browser context.
         // So custom methods you define in this file are not available within this $$eval.
 
@@ -717,7 +743,7 @@ class LinkedInProfileScraper {
 
       if (!this.keepAlive) {
         statusLog(logSection, 'Not keeping the session alive.')
-        await this.close()
+        await this.close(page)
         statusLog(logSection, 'Done. Puppeteer is closed.')
       } else {
         statusLog(logSection, 'Done. Puppeteer is being kept alive in memory.')
