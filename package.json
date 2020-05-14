@@ -21,7 +21,8 @@
     "moment": "^2.24.0",
     "puppeteer": "^3.0.4",
     "tree-kill": "^1.2.2",
-    "tslib": "^1.13.0"
+    "tslib": "^1.13.0",
+    "moment-timezone": "^0.5.28"
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
@@ -32,7 +33,6 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jest": "^25.5.1",
-    "moment-timezone": "^0.5.28",
     "release-it": "^13.5.8",
     "ts-jest": "^25.5.1",
     "ts-node-dev": "^1.0.0-pre.44",
