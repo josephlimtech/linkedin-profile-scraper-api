@@ -142,4 +142,4 @@ You probably need to follow the setup steps when the scraper logs show it's not 
 - Scraping usually takes a few seconds, because the script needs to scroll through the page and expand several elements in order for all the data to appear.
 
 ### Usage limits
-Read: [LinkedIn Commercial Use Limit](https://www.linkedin.com/help/linkedin/answer/52950)
+LinkedIn has some usage limits in place. Please respect those and use their options to increase limits. More info: [LinkedIn Commercial Use Limit](https://www.linkedin.com/help/linkedin/answer/52950)
