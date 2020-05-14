@@ -69,7 +69,7 @@ By default the scraper will close after a successful scrape. Freeing up your mem
   "experiences": [
     {
       "title": "CEO",
-      "company": null,
+      "company": "GitHub",
       "employmentType": null,
       "location": {
         "city": "San Francisco Bay",
@@ -77,25 +77,25 @@ By default the scraper will close after a successful scrape. Freeing up your mem
         "country": null
       },
       "startDate": "2018-10-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:20:22+02:00",
+      "endDate": "2020-05-14T13:32:41+02:00",
       "endDateIsPresent": true,
       "description": null,
       "durationInDays": 592
     },
     {
       "title": "Cofounder",
-      "company": null,
+      "company": "AI Grant",
       "employmentType": null,
       "location": null,
       "startDate": "2017-04-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:20:22+02:00",
+      "endDate": "2020-05-14T13:32:41+02:00",
       "endDateIsPresent": true,
       "description": "AI Grant is a non-profit distributed research lab. We fund brilliant minds across the world to work on cutting-edge artificial intelligence projects. Almost all of the work we sponsor is open source, and we evaluate applications on the strength of the applicants and their ideas, with no credentials required. To date we have provided over $500,000 in money and resources to more than fifty teams around the world. … see more",
       "durationInDays": 1140
     },
     {
       "title": "Cofounder, Chairman",
-      "company": null,
+      "company": "California YIMBY",
       "employmentType": null,
       "location": {
         "city": "Sacramento",
@@ -103,14 +103,14 @@ By default the scraper will close after a successful scrape. Freeing up your mem
         "country": "California"
       },
       "startDate": "2017-04-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:20:22+02:00",
+      "endDate": "2020-05-14T13:32:41+02:00",
       "endDateIsPresent": true,
       "description": "California YIMBY is a statewide housing policy organization I cofounded in 2017. Our goal is to systematically alter state policy to increase the rate of home building and address the statewide housing shortage in California. Denser housing reduces poverty, increases intergenerational socieconomic mobility, reduces carbon emissions, accelerates economic growth, reduces displacement, and improves well-being. … see more",
       "durationInDays": 1140
     },
     {
       "title": "Corporate Vice President, Developer Services",
-      "company": null,
+      "company": "Microsoft",
       "employmentType": null,
       "location": {
         "city": "San Francisco",
@@ -118,25 +118,25 @@ By default the scraper will close after a successful scrape. Freeing up your mem
         "country": null
       },
       "startDate": "2016-03-01T00:00:00+01:00",
-      "endDate": "2020-05-14T13:20:22+02:00",
+      "endDate": "2020-05-14T13:32:41+02:00",
       "endDateIsPresent": true,
       "description": "At Microsoft I am responsible for Visual Studio Team Services and App Center, application lifecycle and devops services with more than a million users. I am also responsible for the internal company-wide engineering systems.",
       "durationInDays": 1536
     },
     {
       "title": "Advisor",
-      "company": null,
+      "company": "Stripe",
       "employmentType": null,
       "location": null,
       "startDate": "2011-05-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:20:22+02:00",
+      "endDate": "2020-05-14T13:32:41+02:00",
       "endDateIsPresent": true,
       "description": "We were one of Stripe's first customers before they launched, and since then I've enjoyed advising them on matters large and small. Patrick and John are amazing and I'm certain I've learned more than I've helped!",
       "durationInDays": 3302
     },
     {
       "title": "CEO and Cofounder",
-      "company": null,
+      "company": "Xamarin",
       "employmentType": null,
       "location": {
         "city": "San Francisco",
@@ -151,7 +151,7 @@ By default the scraper will close after a successful scrape. Freeing up your mem
     },
     {
       "title": "Chief Technology Officer, Open Source",
-      "company": null,
+      "company": "Novell",
       "employmentType": null,
       "location": null,
       "startDate": "2003-01-01T00:00:00+01:00",
@@ -162,7 +162,7 @@ By default the scraper will close after a successful scrape. Freeing up your mem
     },
     {
       "title": "Cofounder, Chairman",
-      "company": null,
+      "company": "GNOME Foundation",
       "employmentType": null,
       "location": null,
       "startDate": "2000-01-01T00:00:00+01:00",
@@ -173,7 +173,7 @@ By default the scraper will close after a successful scrape. Freeing up your mem
     },
     {
       "title": "Cofounder, CEO",
-      "company": null,
+      "company": "Ximian",
       "employmentType": null,
       "location": null,
       "startDate": "1999-01-01T00:00:00+01:00",
