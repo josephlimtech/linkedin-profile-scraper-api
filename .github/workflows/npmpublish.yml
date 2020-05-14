@@ -4,8 +4,9 @@
 name: Publish NPM Package
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+    - '*'
 
 jobs:
   build:
