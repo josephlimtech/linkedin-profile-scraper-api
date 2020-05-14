@@ -634,7 +634,7 @@ class LinkedInProfileScraper {
           const employmentType = employmentTypeElement?.textContent || null
 
           const companyElement = node.querySelector('.pv-entity__secondary-title');
-          const companyElementClean = companyElement ? companyElement?.querySelector('span') && companyElement?.removeChild(companyElement.querySelector('span') as Node) && companyElement : null;
+          const companyElementClean = companyElement && companyElement?.querySelector('span') ? companyElement?.removeChild(companyElement.querySelector('span') as Node) && companyElement : companyElement || null;
           const company = companyElementClean?.textContent || null
 
           const descriptionElement = node.querySelector('.pv-entity__description');
