@@ -1,6 +1,6 @@
 {
   "name": "linkedin-profile-scraper",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "LinkedIn profile scraper returning structured profile data in JSON. Works in 2020.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
