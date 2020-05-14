@@ -184,6 +184,9 @@ class LinkedInProfileScraper {
     this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
   }
 
+  /**
+   * Method to load Puppeteer in memory so we can re-use the browser instance.
+   */
   public setup = async () => {
     const logSection = 'setup'
 
@@ -279,6 +282,9 @@ class LinkedInProfileScraper {
     }
   };
 
+  /**
+   * Create a Puppeteer page with some extra settings to speed up the crawling process.
+   */
   private createPage = async (): Promise<Page> => {
     const logSection = 'setup page'
 
@@ -401,6 +407,10 @@ class LinkedInProfileScraper {
     return blockedHostsObject;
   }
 
+  /**
+   * Method to complete kill any Puppeteer process still active.
+   * Freeing up memory.
+   */
   public close = (page?: Page): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       const loggerPrefix = 'close';
@@ -447,6 +457,9 @@ class LinkedInProfileScraper {
 
   }
 
+  /**
+   * Simple method to check if the session is still active.
+   */
   public checkIfLoggedIn = async (page: Page) => {
     const logSection = 'checkIfLoggedIn';
 
@@ -469,13 +482,16 @@ class LinkedInProfileScraper {
     return isLoggedIn
   };
 
+  /**
+   * Method to scrape a user profile.
+   */
   public run = async (profileUrl: string) => {
     const logSection = 'run'
 
     const scraperSessionId = new Date().getTime();
 
     if (!this.browser) {
-      throw new Error('Browser is not set.')
+      throw new Error('Browser is not set. Please run the setup method first.')
     }
 
     if (!profileUrl) {
