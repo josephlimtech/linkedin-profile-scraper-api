@@ -1,24 +1,22 @@
-const moment = require('moment');
+import moment from 'moment';
+import { Location } from '../index';
+import { Page } from 'puppeteer';
 
-const formatDate = (date) => {
-  let formattedDate
-  // date = "Present", "2018", "Dec 2018"
+export const formatDate = (date: moment.MomentInput | string): string => {
   if (date === 'Present') {
-    formattedDate = moment().format()
-  } else {
-    formattedDate = moment(date, 'MMMY').format()
+    return moment().format()
   }
 
-  return formattedDate
+  return moment(date, 'MMMY').format()
 }
 
-const getDurationInDays = (formattedStartDate, formattedEndDate) => {
+export const getDurationInDays = (formattedStartDate: string, formattedEndDate: Date | string): number | null => {
   if (!formattedStartDate || !formattedEndDate) return null
   // +1 to include the start date
   return moment(formattedEndDate).diff(moment(formattedStartDate), 'days') + 1
 }
 
-const getLocationFromText = async (text) => {
+export const getLocationFromText = (text: string): Location | null => {
   // Text is something like: Amsterdam Oud-West, North Holland Province, Netherlands
 
   if (!text) return null
@@ -27,9 +25,9 @@ const getLocationFromText = async (text) => {
 
   const parts = cleanText.split(', ');
 
-  let city = null
-  let province = null
-  let country = null
+  let city: null | string = null
+  let province: null | string = null
+  let country: null | string = null
 
   if (parts.length === 3) {
     city = parts[0]
@@ -53,7 +51,7 @@ const getLocationFromText = async (text) => {
   }
 }
 
-const getCleanText = async (text) => {
+export const getCleanText = (text: string | null) => {
   const regexRemoveMultipleSpaces = / +/g
   const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm
 
@@ -70,16 +68,31 @@ const getCleanText = async (text) => {
   return cleanText
 }
 
-const statusLog = async (section, message, scraperSessionId) => {
+export const statusLog = (section: string, message: string, scraperSessionId?: string | number) => {
   const sessionPart = (scraperSessionId) ? ` (${scraperSessionId})` : ''
   const messagePart = (message) ? `: ${message}` : null
   return console.log(`Scraper (${section})${sessionPart}${messagePart}`)
 }
 
-module.exports = {
-  formatDate,
-  getDurationInDays,
-  getCleanText,
-  getLocationFromText,
-  statusLog
+export const autoScroll = async (page: Page) => {
+  await page.evaluate(async () => {
+    await new Promise((resolve, reject) => {
+      var totalHeight = 0;
+      var distance = 500;
+      var timer = setInterval(() => {
+        var scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 100);
+    });
+  });
 }
+
+export const getHostname = (url: string) => {
+  return new URL(url).hostname;
+};
