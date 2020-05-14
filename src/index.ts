@@ -116,8 +116,8 @@ interface ScraperOptions {
 }
 
 async function autoScroll(page: Page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve, reject) => {
+  await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
       var totalHeight = 0;
       var distance = 500;
       var timer = setInterval(() => {
@@ -520,7 +520,7 @@ export default class LinkedInProfileScraper {
 
       statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
-      const rawUserProfileData: RawProfile = await this.page.evaluate(async () => {
+      const rawUserProfileData: RawProfile = await this.page.evaluate(() => {
         const profileSection = document.querySelector('.pv-top-card')
 
         const url = window.location.href
@@ -639,7 +639,7 @@ export default class LinkedInProfileScraper {
 
       statusLog(logSection, `Parsing education data...`, scraperSessionId)
 
-      const rawEducationData: RawEducation[] = await this.page.$$eval('#education-section ul > .ember-view', async (nodes) => {
+      const rawEducationData: RawEducation[] = await this.page.$$eval('#education-section ul > .ember-view', (nodes) => {
         // Note: the $$eval context is the browser context.
         // So custom methods you define in this file are not available within this $$eval.
         let data: RawEducation[] = []
