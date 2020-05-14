@@ -19,6 +19,7 @@ In order to scrape LinkedIn profiles, you need to make sure the scraper is logge
 1. Create a new account on LinkedIn, or use one you already have
 2. Login to that account using your browser
 3. Open your browser's Dev Tools to find the cookie with the name `li_at`. Use that value for `sessionCookieValue` when setting up the scraper.
+4. Install: `npm install linkedin-profile-scraper`
 
 ```typescript
 import LinkedInProfileScraper from 'linkedin-profile-scraper';
