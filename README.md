@@ -3,13 +3,15 @@ LinkedIn profile scraper using Puppeteer headless browser. So you can use it on 
 
 This scraper will extract publicly available data:
 
-**🧑‍🎨 Profile details:** name, title, location, picture, description and url
+**🧑‍🎨 Profile:** name, title, location, picture, description and url
 
-**👨‍💼 Experience details:** title, company name, location, duration, start date, end date and the description
+**👨‍💼 Experiences:** title, company name, location, duration, start date, end date and the description
 
-**👨‍🎓 Education details:** school name, degree name, start date and end date
+**👨‍🎓 Education:** school name, degree name, start date and end date
 
-**🏋️‍♂️ Skill details:** name and endorsement count
+**👨‍🎓 Volunteer experiences:** title, company, description, start date and end date name
+
+**🏋️‍♂️ Skills:** name and endorsement count
 
 All dates are formatted to a generic format.
 
