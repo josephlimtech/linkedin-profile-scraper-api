@@ -39,6 +39,15 @@
     "typescript": "^3.9.2",
     "typescript-tslint-plugin": "^0.5.5"
   },
+  "release-it": {
+    "git": {
+      "tag": true,
+      "push": true
+    },
+    "npm": {
+      "publish": false
+    }
+  },
   "jest": {
     "globals": {
       "NODE_ENV": "test"
