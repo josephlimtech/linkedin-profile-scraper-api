@@ -1,5 +1,5 @@
 # LinkedIn Profile Scraper
-LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format.
+LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format. Works in 2020.
 
 This scraper will extract publicly available data:
 
