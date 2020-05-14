@@ -1,5 +1,9 @@
 import { formatDate, getDurationInDays, getLocationFromText, getCleanText } from './index'
 
+// Make sure our CI uses the same timezone
+import moment from 'moment-timezone'
+moment.tz.setDefault('Europe/Amsterdam');
+
 describe('utils', () => {
 
   describe('formatDate()', () => {
