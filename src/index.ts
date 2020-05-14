@@ -141,7 +141,6 @@ class LinkedInProfileScraper {
   private readonly timeout: number;
   private readonly headless: boolean;
 
-  private page: Page | null = null;
   private browser: Browser | null = null;
 
   constructor(options: ScraperOptions) {
