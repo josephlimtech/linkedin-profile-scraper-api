@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone'
 import { Location } from '../index';
 import { Page } from 'puppeteer';
 
