@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 import puppeteer, { Page, Browser } from 'puppeteer'
 import treeKill from 'tree-kill';
 
