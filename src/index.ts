@@ -182,11 +182,9 @@ class LinkedInProfileScraper {
 
     // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
     this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
-
-    this.setup()
   }
 
-  private setup = async () => {
+  public setup = async () => {
     const logSection = 'setup'
 
     // Important: Do not block "stylesheet", makes the crawler not work for LinkedIn

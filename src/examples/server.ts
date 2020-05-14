@@ -5,19 +5,26 @@ import LinkedInProfileScraper from '../index';
 
 const app = express();
 
-// Setup environment variables to fill the sessionCookieValue
-const scraper = new LinkedInProfileScraper({
-  sessionCookieValue: `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
-  keepAlive: true,
-})
+(async () => {
+  // Setup environment variables to fill the sessionCookieValue
+  const scraper = new LinkedInProfileScraper({
+    sessionCookieValue: `${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`,
+    keepAlive: true,
+  })
 
-// Usage: http://localhost:3000/?url=https://www.linkedin.com/in/jvandenaardweg/
-app.get('/', async (req, res) => {
-  const urlToScrape = req.query.url as string;
+  // Prepare the scraper
+  // Loading it in memory
+  await scraper.setup()
 
-  const result = await scraper.run(urlToScrape)
-  
-  return res.json(result)
-})
+  // Usage: http://localhost:3000/?url=https://www.linkedin.com/in/jvandenaardweg/
+  app.get('/', async (req, res) => {
+    const urlToScrape = req.query.url as string;
 
-app.listen(process.env.PORT || 3000)
+    const result = await scraper.run(urlToScrape)
+
+    return res.json(result)
+  })
+
+  app.listen(process.env.PORT || 3000)
+})()
+

@@ -8,6 +8,10 @@ import LinkedInProfileScraper from '../index';
     keepAlive: false
   });
 
+  // Prepare the scraper
+  // Loading it in memory
+  await scraper.setup()
+
   const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
   
   // When keepAlive: true, you can manually close the session using the method below.
