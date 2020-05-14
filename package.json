@@ -1,7 +1,7 @@
 {
   "name": "linkedin-profile-scraper",
   "version": "1.0.0",
-  "description": "LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured LinkedIn public profile data in JSON format.",
+  "description": "LinkedIn profile scraper returning structured profile data in JSON. Works in 2020.",
   "main": "dist/index.js",
   "scripts": {
     "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/examples/server.ts",
