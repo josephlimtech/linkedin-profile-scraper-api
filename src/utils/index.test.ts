@@ -9,7 +9,7 @@ describe('utils', () => {
   describe('formatDate()', () => {
 
     it('should return a formatted date', () => {
-      const formattedDate = formatDate(new Date('2020-12-31T01:11:00'));
+      const formattedDate = formatDate(new Date('2020-12-31T01:11:00+01:00'));
 
       expect(formattedDate).toBe('2020-12-31T01:11:00+01:00')
     })
