@@ -21,6 +21,7 @@ In order to scrape LinkedIn profiles, you need to make sure the scraper is logge
 3. Open your browser's Dev Tools to find the cookie with the name `li_at`. Use that value for `sessionCookieValue` when setting up the scraper.
 4. Install: `npm install linkedin-profile-scraper`
 
+## Usage
 ```typescript
 import LinkedInProfileScraper from 'linkedin-profile-scraper';
 
@@ -40,7 +41,7 @@ import LinkedInProfileScraper from 'linkedin-profile-scraper';
 })()
 ```
 
-See `src/examples` for more examples.
+See [src/examples](https://github.com/jvandenaardweg/linkedin-profile-scraper/tree/master/src/examples) for more examples.
 
 ## Faster recurring scrapes
 Set `keepAlive` to `true` to keep Puppeteer running in the background for faster recurring scrapes. This will keep your memory usage high as Puppeteer will sit idle in the background.
