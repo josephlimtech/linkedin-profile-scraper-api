@@ -1,27 +1,71 @@
 {
   "name": "linkedin-profile-scraper",
   "version": "1.0.0",
-  "description": "LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured LinkedIn public profile data in JSON format.",
-  "main": "index.js",
+  "description": "LinkedIn profile scraper returning structured profile data in JSON. Works in 2020.",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "./node_modules/nodemon/bin/nodemon.js ./index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node-dev -r dotenv/config --inspect=9230 --respawn --transpileOnly ./src/examples/server.ts",
+    "build": "npx tsc -p tsconfig.production.json",
+    "test:watch": "NODE_ENV=test jest --watch --coverage",
+    "test": "NODE_ENV=test jest --coverage",
+    "update": "npx npm-check --update",
+    "release": "release-it"
   },
   "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/jvandenaardweg/linkedin-profile-scraper.git"
+    "type": "git",
+    "url": "https://github.com/jvandenaardweg/linkedin-profile-scraper.git"
   },
   "license": "ISC",
   "dependencies": {
-    "clean-text-utils": "^1.1.17",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
     "moment": "^2.24.0",
-    "puppeteer": "^3.0.2"
+    "puppeteer": "^3.0.4",
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "@types/express": "^4.17.6",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^14.0.1",
+    "@types/puppeteer": "^2.1.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jest": "^25.5.1",
+    "release-it": "^13.5.8",
+    "ts-jest": "^25.5.1",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "tslib": "^1.12.0",
+    "typescript": "^3.9.2",
+    "typescript-tslint-plugin": "^0.5.5"
+  },
+  "jest": {
+    "globals": {
+      "NODE_ENV": "test"
+    },
+    "testEnvironment": "node",
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{ts,js,jsx,json,node}",
+      "!**/node_modules/**",
+      "!**/typings/**",
+      "!**/integration/**"
+    ],
+    "testPathIgnorePatterns": [
+      ".e2e.test.ts"
+    ]
   }
 }
