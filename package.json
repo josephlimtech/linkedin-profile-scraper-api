@@ -8,7 +8,8 @@
     "build": "npx tsc -p tsconfig.production.json",
     "test:watch": "NODE_ENV=test jest --watch --coverage",
     "test": "NODE_ENV=test jest --coverage",
-    "update": "npx npm-check --update"
+    "update": "npx npm-check --update",
+    "release": "release-it"
   },
   "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
   "repository": {
@@ -29,6 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jest": "^25.5.1",
+    "release-it": "^13.5.8",
     "ts-jest": "^25.5.1",
     "ts-node-dev": "^1.0.0-pre.44",
     "tslib": "^1.12.0",
@@ -40,14 +42,30 @@
       "NODE_ENV": "test"
     },
     "testEnvironment": "node",
-    "setupFiles": ["dotenv/config"],
-    "roots": ["<rootDir>/src"],
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
-    "moduleFileExtensions": ["ts", "js", "json", "node"],
-    "collectCoverageFrom": ["**/*.{ts,js,jsx,json,node}", "!**/node_modules/**", "!**/typings/**", "!**/integration/**"],
-    "testPathIgnorePatterns": [".e2e.test.ts"]
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{ts,js,jsx,json,node}",
+      "!**/node_modules/**",
+      "!**/typings/**",
+      "!**/integration/**"
+    ],
+    "testPathIgnorePatterns": [
+      ".e2e.test.ts"
+    ]
   }
 }
