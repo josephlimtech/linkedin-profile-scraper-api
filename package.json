@@ -25,11 +25,13 @@
   "devDependencies": {
     "@types/express": "^4.17.6",
     "@types/jest": "^25.2.1",
+    "@types/moment-timezone": "^0.5.13",
     "@types/node": "^14.0.1",
     "@types/puppeteer": "^2.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jest": "^25.5.1",
+    "moment-timezone": "^0.5.28",
     "release-it": "^13.5.8",
     "ts-jest": "^25.5.1",
     "ts-node-dev": "^1.0.0-pre.44",
