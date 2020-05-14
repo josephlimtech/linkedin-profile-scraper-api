@@ -9,7 +9,7 @@ This scraper will extract publicly available data:
 
 **👨‍🎓 Education:** school name, degree name, start date and end date
 
-**👨‍🎓 Volunteer experiences:** title, company, description, start date and end date name
+**🦸 Volunteer experiences:** title, company, description, start date and end date name
 
 **🏋️‍♂️ Skills:** name and endorsement count
 
