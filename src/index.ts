@@ -150,23 +150,40 @@ export default class LinkedInProfileScraper {
     this.sessionCookieValue = options.sessionCookieValue;
 
     if (!this.sessionCookieValue) {
-      throw new Error('Error during setup. A "sessionCookieValue" is required.');
+      throw new Error('Error during setup. Option "sessionCookieValue" is required.');
+    }
+    
+    if (this.sessionCookieValue && typeof options.sessionCookieValue !== 'string') {
+      throw new Error('Error during setup. Option "sessionCookieValue" needs to be a string.');
+    }
+    
+    if (this.userAgent && typeof options.userAgent !== 'string') {
+      throw new Error('Error during setup. Option "userAgent" needs to be a string.');
     }
 
-    if (options.timeout && typeof options.timeout !== 'number') {
-      throw new Error('Error during setup. Timeout needs to be a number.');
+    if (options.keepAlive !== undefined && typeof options.keepAlive !== 'boolean') {
+      throw new Error('Error during setup. Options "keepAlive" needs to be a number.');
+    }
+   
+    if (options.timeout !== undefined && typeof options.timeout !== 'number') {
+      throw new Error('Error during setup. Options "timeout" needs to be a number.');
+    }
+    
+    if (options.headless !== undefined && typeof options.headless !== 'boolean') {
+      throw new Error('Error during setup. Option "headless" needs to be a boolean.');
     }
 
     // Defaults to: false
     this.keepAlive = options.keepAlive === undefined ? false : options.keepAlive;
 
-    // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
-    this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
-
     // Defaults to: 10000
     this.timeout = options.timeout === undefined ? 10000 : options.timeout;
 
+    // Defaults to: true
     this.headless = options.headless === undefined ? true : options.headless;
+
+    // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
+    this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
 
     this.setup()
   }
@@ -320,7 +337,12 @@ export default class LinkedInProfileScraper {
         browser: this.browser
       }
     } catch (err) {
-      throw new Error(err)
+      // Kill Puppeteer
+      await this.close();
+
+      statusLog(logSection, 'An error occurred during setup.')
+
+      throw err
     }
   };
 
@@ -445,270 +467,280 @@ export default class LinkedInProfileScraper {
       throw new Error('The given URL to scrape is not a linkedin.com url.')
     }
 
-    statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
+    try {
+      statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
-    await this.page.goto(profileUrl, {
-      // Use "networkidl2" here and not "domcontentloaded". 
-      // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
-      waitUntil: 'networkidle2',
-      timeout: this.timeout
-    });
+      await this.page.goto(profileUrl, {
+        // Use "networkidl2" here and not "domcontentloaded". 
+        // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
+        waitUntil: 'networkidle2',
+        timeout: this.timeout
+      });
 
-    statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)
+      statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)
 
-    statusLog(logSection, 'Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...', scraperSessionId)
+      statusLog(logSection, 'Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...', scraperSessionId)
 
-    await autoScroll(this.page);
+      await autoScroll(this.page);
 
-    statusLog(logSection, 'Parsing data...', scraperSessionId)
+      statusLog(logSection, 'Parsing data...', scraperSessionId)
 
-    // Only click the expanding buttons when they exist
-    const expandButtonsSelectors = [
-      '.pv-profile-section.pv-about-section .lt-line-clamp__more', // About
-      '#experience-section .pv-profile-section__see-more-inline.link', // Experience
-      '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
-      '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
-    ];
+      // Only click the expanding buttons when they exist
+      const expandButtonsSelectors = [
+        '.pv-profile-section.pv-about-section .lt-line-clamp__more', // About
+        '#experience-section .pv-profile-section__see-more-inline.link', // Experience
+        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
+        '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
+      ];
 
-    const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]', '.lt-line-clamp__more[href="#"]:not(.lt-line-clamp__ellipsis--dummy)']
+      const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]', '.lt-line-clamp__more[href="#"]:not(.lt-line-clamp__ellipsis--dummy)']
 
-    statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
+      statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
-    for (const buttonSelector of expandButtonsSelectors) {
-      if (await this.page.$(buttonSelector) !== null) {
-        statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-        await this.page.click(buttonSelector);
-      }
-    }
-
-    // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
-    await this.page.waitFor(100);
-
-    statusLog(logSection, 'Expanding all descriptions by clicking their "See more" buttons', scraperSessionId)
-
-    for (const seeMoreButtonSelector of seeMoreButtonsSelectors) {
-      const buttons = await this.page.$$(seeMoreButtonSelector)
-
-      for (const button of buttons) {
-        if (button) {
-          statusLog(logSection, `Clicking button ${seeMoreButtonSelector}`, scraperSessionId)
-          await button.click()
+      for (const buttonSelector of expandButtonsSelectors) {
+        if (await this.page.$(buttonSelector) !== null) {
+          statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
+          await this.page.click(buttonSelector);
         }
       }
-    }
 
-    statusLog(logSection, 'Parsing profile data...', scraperSessionId)
+      // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
+      await this.page.waitFor(100);
 
-    const rawUserProfileData: RawProfile = await this.page.evaluate(async () => {
-      const profileSection = document.querySelector('.pv-top-card')
+      statusLog(logSection, 'Expanding all descriptions by clicking their "See more" buttons', scraperSessionId)
 
-      const url = window.location.href
+      for (const seeMoreButtonSelector of seeMoreButtonsSelectors) {
+        const buttons = await this.page.$$(seeMoreButtonSelector)
 
-      const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
-      const fullName = fullNameElement?.textContent || null
+        for (const button of buttons) {
+          if (button) {
+            statusLog(logSection, `Clicking button ${seeMoreButtonSelector}`, scraperSessionId)
+            await button.click()
+          }
+        }
+      }
 
-      const titleElement = profileSection?.querySelector('h2')
-      const title = titleElement?.textContent || null
+      statusLog(logSection, 'Parsing profile data...', scraperSessionId)
 
-      const locationElement = profileSection?.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
-      const location = locationElement?.textContent || null
+      const rawUserProfileData: RawProfile = await this.page.evaluate(async () => {
+        const profileSection = document.querySelector('.pv-top-card')
 
-      const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
-      const photo = photoElement?.getAttribute('src') || null
+        const url = window.location.href
 
-      const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
-      const description = descriptionElement?.textContent || null
+        const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
+        const fullName = fullNameElement?.textContent || null
 
-      return {
-        fullName,
-        title,
-        location,
-        photo,
-        description,
-        url
-      } as RawProfile
-    })
-
-    // Convert the raw data to clean data using our utils
-    // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
-    const userProfile: Profile = {
-      ...rawUserProfileData,
-      fullName: getCleanText(rawUserProfileData.fullName),
-      title: getCleanText(rawUserProfileData.title),
-      location: rawUserProfileData.location ? getLocationFromText(rawUserProfileData.location) : null,
-      description: getCleanText(rawUserProfileData.description),
-    }
-
-    statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId)
-
-    statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
-
-    const rawExperiencesData: RawExperience[] = await this.page.$$eval('#experience-section ul > .ember-view', (nodes) => {
-      let data: RawExperience[] = []
-
-      // Using a for loop so we can use await inside of it
-      for (const node of nodes) {
-        const titleElement = node.querySelector('h3');
+        const titleElement = profileSection?.querySelector('h2')
         const title = titleElement?.textContent || null
 
-        const employmentTypeElement = node.querySelector('span.pv-entity__secondary-title');
-        const employmentType = employmentTypeElement?.textContent || null
+        const locationElement = profileSection?.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
+        const location = locationElement?.textContent || null
 
-        const companyElement = node.querySelector('.pv-entity__secondary-title');
-        const companyElementClean = companyElement?.removeChild(companyElement.querySelector('span') as Node);
-        const company = companyElementClean?.textContent || null
+        const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
+        const photo = photoElement?.getAttribute('src') || null
 
-        const descriptionElement = node.querySelector('.pv-entity__description');
+        const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
         const description = descriptionElement?.textContent || null
 
-        const dateRangeElement = node.querySelector('.pv-entity__date-range span:nth-child(2)');
-        const dateRangeText = dateRangeElement?.textContent || null
-
-        const startDatePart = dateRangeText?.split('–')[0] || null;
-        const startDate = startDatePart?.trim() || null;
-
-        const endDatePart = dateRangeText?.split('–')[1] || null;
-        const endDateIsPresent = endDatePart?.trim().toLowerCase() === 'present' || false;
-        const endDate = (endDatePart && !endDateIsPresent) ? endDatePart.trim() : 'Present';
-
-        const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
-        const location = locationElement?.textContent || null;
-
-        data.push({
+        return {
+          fullName,
           title,
-          company,
-          employmentType,
           location,
+          photo,
+          description,
+          url
+        } as RawProfile
+      })
+
+      // Convert the raw data to clean data using our utils
+      // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
+      const userProfile: Profile = {
+        ...rawUserProfileData,
+        fullName: getCleanText(rawUserProfileData.fullName),
+        title: getCleanText(rawUserProfileData.title),
+        location: rawUserProfileData.location ? getLocationFromText(rawUserProfileData.location) : null,
+        description: getCleanText(rawUserProfileData.description),
+      }
+
+      statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId)
+
+      statusLog(logSection, `Parsing experiences data...`, scraperSessionId)
+
+      const rawExperiencesData: RawExperience[] = await this.page.$$eval('#experience-section ul > .ember-view', (nodes) => {
+        let data: RawExperience[] = []
+
+        // Using a for loop so we can use await inside of it
+        for (const node of nodes) {
+          const titleElement = node.querySelector('h3');
+          const title = titleElement?.textContent || null
+
+          const employmentTypeElement = node.querySelector('span.pv-entity__secondary-title');
+          const employmentType = employmentTypeElement?.textContent || null
+
+          const companyElement = node.querySelector('.pv-entity__secondary-title');
+          const companyElementClean = companyElement?.removeChild(companyElement.querySelector('span') as Node);
+          const company = companyElementClean?.textContent || null
+
+          const descriptionElement = node.querySelector('.pv-entity__description');
+          const description = descriptionElement?.textContent || null
+
+          const dateRangeElement = node.querySelector('.pv-entity__date-range span:nth-child(2)');
+          const dateRangeText = dateRangeElement?.textContent || null
+
+          const startDatePart = dateRangeText?.split('–')[0] || null;
+          const startDate = startDatePart?.trim() || null;
+
+          const endDatePart = dateRangeText?.split('–')[1] || null;
+          const endDateIsPresent = endDatePart?.trim().toLowerCase() === 'present' || false;
+          const endDate = (endDatePart && !endDateIsPresent) ? endDatePart.trim() : 'Present';
+
+          const locationElement = node.querySelector('.pv-entity__location span:nth-child(2)');
+          const location = locationElement?.textContent || null;
+
+          data.push({
+            title,
+            company,
+            employmentType,
+            location,
+            startDate,
+            endDate,
+            endDateIsPresent,
+            description
+          })
+        }
+
+        return data;
+      });
+
+      // Convert the raw data to clean data using our utils
+      // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
+      const experiences: Experience[] = rawExperiencesData.map((rawExperience) => {
+        const startDate = formatDate(rawExperience.startDate);
+        const endDate = formatDate(rawExperience.endDate) || null;
+        const endDateIsPresent = rawExperience.endDateIsPresent;
+
+        const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? getDurationInDays(startDate, endDate) : null
+        const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? getDurationInDays(startDate, new Date()) : null
+        const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
+
+        return {
+          ...rawExperience,
+          title: getCleanText(rawExperience.title),
+          company: getCleanText(rawExperience.company),
+          employmentType: getCleanText(rawExperience.employmentType),
+          location: rawExperience?.location ? getLocationFromText(rawExperience.location) : null,
           startDate,
           endDate,
           endDateIsPresent,
-          description
-        })
-      }
+          durationInDays,
+          description: getCleanText(rawExperience.description)
+        }
+      })
 
-      return data;
-    });
+      statusLog(logSection, `Got experiences data: ${JSON.stringify(experiences)}`, scraperSessionId)
 
-    // Convert the raw data to clean data using our utils
-    // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
-    const experiences: Experience[] = rawExperiencesData.map((rawExperience) => {
-      const startDate = formatDate(rawExperience.startDate);
-      const endDate = formatDate(rawExperience.endDate) || null;
-      const endDateIsPresent = rawExperience.endDateIsPresent;
+      statusLog(logSection, `Parsing education data...`, scraperSessionId)
 
-      const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? getDurationInDays(startDate, endDate) : null
-      const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? getDurationInDays(startDate, new Date()) : null
-      const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
+      const rawEducationData: RawEducation[] = await this.page.$$eval('#education-section ul > .ember-view', async (nodes) => {
+        // Note: the $$eval context is the browser context.
+        // So custom methods you define in this file are not available within this $$eval.
+        let data: RawEducation[] = []
+        for (const node of nodes) {
 
-      return {
-        ...rawExperience,
-        title: getCleanText(rawExperience.title),
-        company: getCleanText(rawExperience.company),
-        employmentType: getCleanText(rawExperience.employmentType),
-        location: rawExperience?.location ? getLocationFromText(rawExperience.location) : null,
-        startDate,
-        endDate,
-        endDateIsPresent,
-        durationInDays,
-        description: getCleanText(rawExperience.description)
-      }
-    })
+          const schoolNameElement = node.querySelector('h3.pv-entity__school-name');
+          const schoolName = schoolNameElement?.textContent || null;
 
-    statusLog(logSection, `Got experiences data: ${JSON.stringify(experiences)}`, scraperSessionId)
+          const degreeNameElement = node.querySelector('.pv-entity__degree-name .pv-entity__comma-item');
+          const degreeName = degreeNameElement?.textContent || null;
 
-    statusLog(logSection, `Parsing education data...`, scraperSessionId)
+          const fieldOfStudyElement = node.querySelector('.pv-entity__fos .pv-entity__comma-item');
+          const fieldOfStudy = fieldOfStudyElement?.textContent || null;
 
-    const rawEducationData: RawEducation[] = await this.page.$$eval('#education-section ul > .ember-view', async (nodes) => {
-      // Note: the $$eval context is the browser context.
-      // So custom methods you define in this file are not available within this $$eval.
-      let data: RawEducation[] = []
-      for (const node of nodes) {
+          // const gradeElement = node.querySelector('.pv-entity__grade .pv-entity__comma-item');
+          // const grade = (gradeElement && gradeElement.textContent) ? window.getCleanText(fieldOfStudyElement.textContent) : null;
 
-        const schoolNameElement = node.querySelector('h3.pv-entity__school-name');
-        const schoolName = schoolNameElement?.textContent || null;
+          const dateRangeElement = node.querySelectorAll('.pv-entity__dates time');
 
-        const degreeNameElement = node.querySelector('.pv-entity__degree-name .pv-entity__comma-item');
-        const degreeName = degreeNameElement?.textContent || null;
+          const startDatePart = dateRangeElement && dateRangeElement[0]?.textContent || null;
+          const startDate = startDatePart || null
 
-        const fieldOfStudyElement = node.querySelector('.pv-entity__fos .pv-entity__comma-item');
-        const fieldOfStudy = fieldOfStudyElement?.textContent || null;
+          const endDatePart = dateRangeElement && dateRangeElement[1]?.textContent || null;
+          const endDate = endDatePart || null
 
-        // const gradeElement = node.querySelector('.pv-entity__grade .pv-entity__comma-item');
-        // const grade = (gradeElement && gradeElement.textContent) ? window.getCleanText(fieldOfStudyElement.textContent) : null;
+          data.push({
+            schoolName,
+            degreeName,
+            fieldOfStudy,
+            startDate,
+            endDate
+          })
+        }
 
-        const dateRangeElement = node.querySelectorAll('.pv-entity__dates time');
+        return data
+      });
 
-        const startDatePart = dateRangeElement && dateRangeElement[0]?.textContent || null;
-        const startDate = startDatePart || null
-
-        const endDatePart = dateRangeElement && dateRangeElement[1]?.textContent || null;
-        const endDate = endDatePart || null
-
-        data.push({
-          schoolName,
-          degreeName,
-          fieldOfStudy,
-          startDate,
-          endDate
-        })
-      }
-
-      return data
-    });
-
-    // Convert the raw data to clean data using our utils
-    // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
-    const education: Education[] = rawEducationData.map(rawEducation => {
-      const startDate = formatDate(rawEducation.startDate)
-      const endDate = formatDate(rawEducation.endDate)
-
-      return {
-        ...rawEducation,
-        schoolName: getCleanText(rawEducation.schoolName),
-        degreeName: getCleanText(rawEducation.degreeName),
-        fieldOfStudy: getCleanText(rawEducation.fieldOfStudy),
-        startDate,
-        endDate,
-        durationInDays: getDurationInDays(startDate, endDate),
-      }
-    })
-
-    statusLog(logSection, `Got education data: ${JSON.stringify(education)}`, scraperSessionId)
-
-    statusLog(logSection, `Parsing skills data...`, scraperSessionId)
-
-    const skills: Skill[] = await this.page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
-      // Note: the $$eval context is the browser context.
-      // So custom methods you define in this file are not available within this $$eval.
-
-      return nodes.map((node) => {
-        const skillName = node.querySelector('.pv-skill-category-entity__name-text');
-        const endorsementCount = node.querySelector('.pv-skill-category-entity__endorsement-count');
+      // Convert the raw data to clean data using our utils
+      // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
+      const education: Education[] = rawEducationData.map(rawEducation => {
+        const startDate = formatDate(rawEducation.startDate)
+        const endDate = formatDate(rawEducation.endDate)
 
         return {
-          skillName: (skillName) ? skillName.textContent?.trim() : null,
-          endorsementCount: (endorsementCount) ? parseInt(endorsementCount.textContent?.trim() || '0') : 0
-        } as Skill;
-      }) as Skill[]
-    });
+          ...rawEducation,
+          schoolName: getCleanText(rawEducation.schoolName),
+          degreeName: getCleanText(rawEducation.degreeName),
+          fieldOfStudy: getCleanText(rawEducation.fieldOfStudy),
+          startDate,
+          endDate,
+          durationInDays: getDurationInDays(startDate, endDate),
+        }
+      })
 
-    statusLog(logSection, `Got skills data: ${JSON.stringify(skills)}`, scraperSessionId)
+      statusLog(logSection, `Got education data: ${JSON.stringify(education)}`, scraperSessionId)
 
-    statusLog(logSection, `Done! Returned profile details for: ${profileUrl}`, scraperSessionId)
+      statusLog(logSection, `Parsing skills data...`, scraperSessionId)
 
-    if (!this.keepAlive) {
-      statusLog(logSection, 'Not keeping the session alive.')
+      const skills: Skill[] = await this.page.$$eval('.pv-skill-categories-section ol > .ember-view', nodes => {
+        // Note: the $$eval context is the browser context.
+        // So custom methods you define in this file are not available within this $$eval.
+
+        return nodes.map((node) => {
+          const skillName = node.querySelector('.pv-skill-category-entity__name-text');
+          const endorsementCount = node.querySelector('.pv-skill-category-entity__endorsement-count');
+
+          return {
+            skillName: (skillName) ? skillName.textContent?.trim() : null,
+            endorsementCount: (endorsementCount) ? parseInt(endorsementCount.textContent?.trim() || '0') : 0
+          } as Skill;
+        }) as Skill[]
+      });
+
+      statusLog(logSection, `Got skills data: ${JSON.stringify(skills)}`, scraperSessionId)
+
+      statusLog(logSection, `Done! Returned profile details for: ${profileUrl}`, scraperSessionId)
+
+      if (!this.keepAlive) {
+        statusLog(logSection, 'Not keeping the session alive.')
+        await this.close()
+        statusLog(logSection, 'Done. Puppeteer is closed.')
+      } else {
+        statusLog(logSection, 'Done. Puppeteer is being kept alive in memory.')
+      }
+
+      return {
+        userProfile,
+        experiences,
+        education,
+        skills
+      }
+    } catch (err) {
+      // Kill Puppeteer
       await this.close()
-      statusLog(logSection, 'Done. Puppeteer is closed.')
-    } else {
-      statusLog(logSection, 'Done. Puppeteer is being kept alive in memory.')
-    }
 
-    return {
-      userProfile,
-      experiences,
-      education,
-      skills
+      statusLog(logSection, 'An error occurred during a run.')
+
+      // Throw the error up, allowing the user to handle this error himself.
+      throw err;
     }
   }
 }
