@@ -615,7 +615,7 @@ class LinkedInProfileScraper {
           const employmentType = employmentTypeElement?.textContent || null
 
           const companyElement = node.querySelector('.pv-entity__secondary-title');
-          const companyElementClean = companyElement?.querySelector('span') && companyElement?.removeChild(companyElement.querySelector('span') as Node);
+          const companyElementClean = companyElement ? companyElement?.querySelector('span') && companyElement?.removeChild(companyElement.querySelector('span') as Node) && companyElement : null;
           const company = companyElementClean?.textContent || null
 
           const descriptionElement = node.querySelector('.pv-entity__description');
@@ -762,6 +762,8 @@ class LinkedInProfileScraper {
         statusLog(logSection, 'Done. Puppeteer is closed.')
       } else {
         statusLog(logSection, 'Done. Puppeteer is being kept alive in memory.')
+        // Only close the current page, we do not need it anymore
+        await page.close()
       }
 
       return {
