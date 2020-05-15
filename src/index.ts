@@ -266,30 +266,9 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, 'Puppeteer launched!')
 
-      const page = await this.createPage();
-
-      statusLog(logSection, 'Browsing to LinkedIn.com in the background using a headless browser...')
-
-      await page.goto('https://www.linkedin.com/', {
-        waitUntil: 'domcontentloaded',
-        timeout: this.timeout
-      })
-
-      statusLog(logSection, 'Checking if we are logged in successfully...')
-
-      const isLoggedIn = await this.checkIfLoggedIn(page);
-
-      if (!isLoggedIn) {
-        statusLog(logSection, 'Error! Scraper not logged in into LinkedIn')
-        throw new Error('Scraper not logged in into LinkedIn')
-      }
+      await this.checkIfLoggedIn();
 
       statusLog(logSection, 'Done!')
-
-      return {
-        page,
-        browser: this.browser
-      }
     } catch (err) {
       // Kill Puppeteer
       await this.close();
@@ -478,16 +457,26 @@ class LinkedInProfileScraper {
   /**
    * Simple method to check if the session is still active.
    */
-  public checkIfLoggedIn = async (page: Page) => {
+  public checkIfLoggedIn = async () => {
     const logSection = 'checkIfLoggedIn';
 
-    if (!page) {
-      throw new Error('Page is not set.')
-    }
+    const page = await this.createPage();
 
-    statusLog(logSection, 'Check if we are still logged in...')
+    statusLog(logSection, 'Checking if we are still logged in...')
 
-    const isLoggedIn = await page.$('#login-email') === null
+    // Go to the login page of LinkedIn
+    // If we do not get redirected and stay on /login, we are logged out
+    // If we get redirect to /feed, we are logged in
+    await page.goto('https://www.linkedin.com/login', {
+      waitUntil: 'networkidle2',
+      timeout: this.timeout
+    })
+
+    const url = page.url()
+
+    const isLoggedIn = !url.endsWith('/login')
+
+    await page.close();
 
     if (isLoggedIn) {
       statusLog(logSection, 'All good. We are still logged in.')
@@ -496,8 +485,6 @@ class LinkedInProfileScraper {
       statusLog(logSection, errorMessage)
       throw new Error(errorMessage)
     }
-
-    return isLoggedIn
   };
 
   /**
