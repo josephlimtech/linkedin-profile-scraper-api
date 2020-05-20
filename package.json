@@ -47,7 +47,7 @@
       "commit": true,
       "tag": true,
       "push": true,
-      "changelog": "npx auto-changelog"
+      "changelog": "npx auto-changelog -p"
     },
     "npm": {
       "publish": false
