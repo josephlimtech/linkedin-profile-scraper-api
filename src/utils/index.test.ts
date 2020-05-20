@@ -1,10 +1,66 @@
-import { formatDate, getDurationInDays, getLocationFromText, getCleanText } from './index'
+import { formatDate, getDurationInDays, getLocationFromText, getCleanText, getIsCity, getIsCountry } from './index'
 
 // Make sure our CI uses the same timezone
 import moment from 'moment-timezone'
 moment.tz.setDefault('Europe/Amsterdam');
 
 describe('utils', () => {
+
+  describe('getIsCity()', () => {
+    it('should return true for "Amsterdam"', () => {
+      expect(getIsCity('Amsterdam')).toBe(true)
+    })
+
+    it('should return true for "New York City"', () => {
+      expect(getIsCity('New York City')).toBe(true)
+    })
+    
+    it('should return true for "New York"', () => {
+      expect(getIsCity('New York')).toBe(true)
+    })
+
+    it('should return true for "San Francisco"', () => {
+      expect(getIsCity('San Francisco')).toBe(true)
+    })
+
+    it('should return false for "Netherlands"', () => {
+      expect(getIsCity('Netherlands')).toBe(false)
+    })
+
+    it('should return false for "United States"', () => {
+      expect(getIsCity('United States')).toBe(false)
+    })
+  })
+  
+  describe('getIsCountry()', () => {
+    it('should return true for "Netherlands"', () => {
+      expect(getIsCountry('Netherlands')).toBe(true)
+    })
+
+    it('should return true for "The Netherlands"', () => {
+      expect(getIsCountry('The Netherlands')).toBe(true)
+    })
+    
+    it('should return true for "Sweden"', () => {
+      expect(getIsCountry('Sweden')).toBe(true)
+    })
+    
+    it('should return true for "United States of America"', () => {
+      expect(getIsCountry('United States of America')).toBe(true)
+    })
+    
+    it('should return true for "United States"', () => {
+      expect(getIsCountry('United States')).toBe(true)
+    })
+    
+    it('should return false for "Amsterdam"', () => {
+      expect(getIsCountry('Amsterdam')).toBe(false)
+    })
+    
+    it('should return false for "New York City"', () => {
+      expect(getIsCountry('New York City')).toBe(false)
+    })
+  })
 
   describe('formatDate()', () => {
 

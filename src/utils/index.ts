@@ -6,11 +6,25 @@ import cities from 'all-the-cities';
 
 export const getIsCountry = (text: string): boolean => {
   const countriesList = Object.values(countries.getNames('en'));
-  return !!countriesList.find(country => country.toLowerCase() === text.toLowerCase());
+  const lowerCaseText = text.toLowerCase();
+
+  // Some custom text that we assume is also a country (lower cased)
+  // But is not detected correctly by the iso-countries module
+  if (['united states', 'the netherlands'].includes(lowerCaseText)) {
+    return true;
+  }
+
+  return !!countriesList.find(country => country.toLowerCase() === lowerCaseText);
 }
 
 export const getIsCity = (text: string): boolean => {
-  return !!cities.find(city => city.name.toLowerCase() === text.toLowerCase())
+  const lowerCaseText = text.toLowerCase();
+
+  if (['new york'].includes(lowerCaseText)) {
+    return true;
+  }
+
+  return !!cities.find(city => city.name.toLowerCase() === lowerCaseText)
 }
 
 export const formatDate = (date: moment.MomentInput | string): string => {
