@@ -59,10 +59,10 @@ By default the scraper will close after a successful scrape. Freeing up your mem
     "title": "CEO at GitHub",
     "location": {
       "city": "San Francisco",
-      "province": null,
-      "country": "California"
+      "province": "California",
+      "country": null
     },
-    "photo": "https://media-exp1.licdn.com/dms/image/C5603AQE4l0oJ3jxk9A/profile-displayphoto-shrink_200_200/0?e=1594857600&v=beta&t=_gK2EFiB5dkxfX7KLLLK8Rq1JOzkc5M7EoaEm4DKjS4",
+    "photo": "https://media-exp1.licdn.com/dms/image/C5603AQE4l0oJ3jxk9A/profile-displayphoto-shrink_200_200/0?e=1595462400&v=beta&t=Q3Ai4vRCFwUXK_M68mCFaQNn8kZF6QGJnuupJV0lFwo",
     "description": null,
     "url": "https://www.linkedin.com/in/natfriedman/"
   },
@@ -72,15 +72,15 @@ By default the scraper will close after a successful scrape. Freeing up your mem
       "company": "GitHub",
       "employmentType": null,
       "location": {
-        "city": "San Francisco Bay",
-        "province": null,
+        "city": null,
+        "province": "San Francisco Bay",
         "country": null
       },
       "startDate": "2018-10-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:32:41+02:00",
+      "endDate": "2020-05-20T17:23:33+02:00",
       "endDateIsPresent": true,
       "description": null,
-      "durationInDays": 592
+      "durationInDays": 598
     },
     {
       "title": "Cofounder",
@@ -88,10 +88,10 @@ By default the scraper will close after a successful scrape. Freeing up your mem
       "employmentType": null,
       "location": null,
       "startDate": "2017-04-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:32:41+02:00",
+      "endDate": "2020-05-20T17:23:33+02:00",
       "endDateIsPresent": true,
       "description": "AI Grant is a non-profit distributed research lab. We fund brilliant minds across the world to work on cutting-edge artificial intelligence projects. Almost all of the work we sponsor is open source, and we evaluate applications on the strength of the applicants and their ideas, with no credentials required. To date we have provided over $500,000 in money and resources to more than fifty teams around the world. … see more",
-      "durationInDays": 1140
+      "durationInDays": 1146
     },
     {
       "title": "Cofounder, Chairman",
@@ -99,14 +99,14 @@ By default the scraper will close after a successful scrape. Freeing up your mem
       "employmentType": null,
       "location": {
         "city": "Sacramento",
-        "province": null,
-        "country": "California"
+        "province": "California",
+        "country": null
       },
       "startDate": "2017-04-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:32:41+02:00",
+      "endDate": "2020-05-20T17:23:33+02:00",
       "endDateIsPresent": true,
       "description": "California YIMBY is a statewide housing policy organization I cofounded in 2017. Our goal is to systematically alter state policy to increase the rate of home building and address the statewide housing shortage in California. Denser housing reduces poverty, increases intergenerational socieconomic mobility, reduces carbon emissions, accelerates economic growth, reduces displacement, and improves well-being. … see more",
-      "durationInDays": 1140
+      "durationInDays": 1146
     },
     {
       "title": "Corporate Vice President, Developer Services",
@@ -118,10 +118,10 @@ By default the scraper will close after a successful scrape. Freeing up your mem
         "country": null
       },
       "startDate": "2016-03-01T00:00:00+01:00",
-      "endDate": "2020-05-14T13:32:41+02:00",
+      "endDate": "2020-05-20T17:23:33+02:00",
       "endDateIsPresent": true,
       "description": "At Microsoft I am responsible for Visual Studio Team Services and App Center, application lifecycle and devops services with more than a million users. I am also responsible for the internal company-wide engineering systems.",
-      "durationInDays": 1536
+      "durationInDays": 1542
     },
     {
       "title": "Advisor",
@@ -129,10 +129,10 @@ By default the scraper will close after a successful scrape. Freeing up your mem
       "employmentType": null,
       "location": null,
       "startDate": "2011-05-01T00:00:00+02:00",
-      "endDate": "2020-05-14T13:32:41+02:00",
+      "endDate": "2020-05-20T17:23:33+02:00",
       "endDateIsPresent": true,
       "description": "We were one of Stripe's first customers before they launched, and since then I've enjoyed advising them on matters large and small. Patrick and John are amazing and I'm certain I've learned more than I've helped!",
-      "durationInDays": 3302
+      "durationInDays": 3308
     },
     {
       "title": "CEO and Cofounder",

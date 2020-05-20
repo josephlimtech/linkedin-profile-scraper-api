@@ -32,6 +32,46 @@ describe('utils', () => {
 
   describe('getLocationFromText()', () => {
 
+    it('should return a location object with a country from a string', () => {
+      const location = getLocationFromText('Netherlands');
+
+      expect(location).toMatchObject({
+        city: null,
+        country: 'Netherlands',
+        province: null
+      })
+    })
+    
+    it('should return a location object with a city from a string', () => {
+      const location = getLocationFromText('San Francisco');
+
+      expect(location).toMatchObject({
+        city: 'San Francisco',
+        country: null,
+        province: null
+      })
+    })
+    
+    it('should return a location object with a province/state from a string', () => {
+      const location = getLocationFromText('San Francisco Bay Area');
+
+      expect(location).toMatchObject({
+        city: null,
+        country: null,
+        province: 'San Francisco Bay'
+      })
+    })
+    
+    it('should return a location object with a city and province/state from a string', () => {
+      const location = getLocationFromText('Sacramento, California Area');
+
+      expect(location).toMatchObject({
+        city: 'Sacramento',
+        country: null,
+        province: 'California'
+      })
+    })
+
     it('should return a location object with a city from a string', () => {
       const location = getLocationFromText('Amsterdam');
 
@@ -43,21 +83,21 @@ describe('utils', () => {
     })
 
     it('should return a location object with a city and country from a string', () => {
-      const location = getLocationFromText('Amsterdam, The Netherlands');
+      const location = getLocationFromText('Amsterdam, Netherlands');
 
       expect(location).toMatchObject({
         city: 'Amsterdam',
-        country: 'The Netherlands',
+        country: 'Netherlands',
         province: null
       })
     })
 
     it('should return a location object with a city, province and country from a string', () => {
-      const location = getLocationFromText('Amsterdam, North-Holland, The Netherlands');
+      const location = getLocationFromText('Amsterdam, North-Holland, Netherlands');
 
       expect(location).toMatchObject({
         city: 'Amsterdam',
-        country: 'The Netherlands',
+        country: 'Netherlands',
         province: 'North-Holland'
       })
     })
