@@ -46,8 +46,10 @@
     "git": {
       "commit": true,
       "tag": true,
-      "push": true,
-      "changelog": "npx auto-changelog -p"
+      "push": true
+    },
+    "hooks": {
+      "after:bump": "npx auto-changelog -p"
     },
     "npm": {
       "publish": false
