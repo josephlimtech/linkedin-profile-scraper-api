@@ -93,7 +93,7 @@ export interface Skill {
   endorsementCount: number | null;
 }
 
-interface ScraperOptions {
+interface ScraperUserDefinedOptions {
   /**
    * The LinkedIn `li_at` session cookie value. Get this value by logging in to LinkedIn with the account you want to use for scraping.
    * Open your browser's Dev Tools and find the cookie with the name `li_at`. Use that value here.
@@ -134,6 +134,14 @@ interface ScraperOptions {
   headless?: boolean;
 }
 
+interface ScraperOptions {
+  sessionCookieValue: string;
+  keepAlive: boolean;
+  userAgent: string;
+  timeout: number;
+  headless: boolean;
+}
+
 async function autoScroll(page: Page) {
   await page.evaluate(() => {
     return new Promise((resolve, reject) => {
@@ -154,52 +162,49 @@ async function autoScroll(page: Page) {
 }
 
 class LinkedInProfileScraper {
-  private readonly sessionCookieValue: string = '';
-  private readonly keepAlive: boolean;
-  private readonly userAgent: string = '';
-  private readonly timeout: number;
-  private readonly headless: boolean;
+  private readonly options: ScraperOptions = {
+    sessionCookieValue: '',
+    keepAlive: false,
+    timeout: 10000,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+    headless: true
+  }
 
   private browser: Browser | null = null;
 
-  constructor(options: ScraperOptions) {
-    this.sessionCookieValue = options.sessionCookieValue;
+  constructor(userDefinedOptions: ScraperUserDefinedOptions) {
+    const logSection = 'constructing'
 
-    if (!this.sessionCookieValue) {
+    if (!userDefinedOptions.sessionCookieValue) {
       throw new Error('Error during setup. Option "sessionCookieValue" is required.');
     }
     
-    if (this.sessionCookieValue && typeof options.sessionCookieValue !== 'string') {
+    if (userDefinedOptions.sessionCookieValue && typeof userDefinedOptions.sessionCookieValue !== 'string') {
       throw new Error('Error during setup. Option "sessionCookieValue" needs to be a string.');
     }
     
-    if (this.userAgent && typeof options.userAgent !== 'string') {
+    if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
       throw new Error('Error during setup. Option "userAgent" needs to be a string.');
     }
 
-    if (options.keepAlive !== undefined && typeof options.keepAlive !== 'boolean') {
-      throw new Error('Error during setup. Options "keepAlive" needs to be a number.');
+    if (userDefinedOptions.keepAlive !== undefined && typeof userDefinedOptions.keepAlive !== 'boolean') {
+      throw new Error('Error during setup. userDefinedOptions "keepAlive" needs to be a number.');
     }
    
-    if (options.timeout !== undefined && typeof options.timeout !== 'number') {
-      throw new Error('Error during setup. Options "timeout" needs to be a number.');
+    if (userDefinedOptions.timeout !== undefined && typeof userDefinedOptions.timeout !== 'number') {
+      throw new Error('Error during setup. userDefinedOptions "timeout" needs to be a number.');
     }
     
-    if (options.headless !== undefined && typeof options.headless !== 'boolean') {
+    if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
       throw new Error('Error during setup. Option "headless" needs to be a boolean.');
     }
 
-    // Defaults to: false
-    this.keepAlive = options.keepAlive === undefined ? false : options.keepAlive;
+    this.options = {
+      ...this.options,
+      ...userDefinedOptions
+    };
 
-    // Defaults to: 10000
-    this.timeout = options.timeout === undefined ? 10000 : options.timeout;
-
-    // Defaults to: true
-    this.headless = options.headless === undefined ? true : options.headless;
-
-    // Speed improvement: https://github.com/GoogleChrome/puppeteer/issues/1718#issuecomment-425618798
-    this.userAgent = options.userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36';
+    statusLog(logSection, `Using options: ${JSON.stringify(this.options)}`);
   }
 
   /**
@@ -209,12 +214,12 @@ class LinkedInProfileScraper {
     const logSection = 'setup'
 
     try {
-      statusLog(logSection, `Launching puppeteer in the ${this.headless ? 'background' : 'foreground'}...`)
+      statusLog(logSection, `Launching puppeteer in the ${this.options.headless ? 'background' : 'foreground'}...`)
 
       this.browser = await puppeteer.launch({
-        headless: this.headless,
+        headless: this.options.headless,
         args: [
-          ...(this.headless ? '---single-process' : '---start-maximized'),
+          ...(this.options.headless ? '---single-process' : '---start-maximized'),
           '--no-sandbox',
           '--disable-setuid-sandbox',
           "--proxy-server='direct://",
@@ -261,7 +266,7 @@ class LinkedInProfileScraper {
           '--use-gl=swiftshader',
           '--use-mock-keychain'
         ],
-        timeout: this.timeout
+        timeout: this.options.timeout
       })
 
       statusLog(logSection, 'Puppeteer launched!')
@@ -338,7 +343,7 @@ class LinkedInProfileScraper {
         return req.continue()
       })
 
-      await page.setUserAgent(this.userAgent)
+      await page.setUserAgent(this.options.userAgent)
 
       await page.setViewport({
         width: 1200,
@@ -349,7 +354,7 @@ class LinkedInProfileScraper {
 
       await page.setCookie({
         'name': 'li_at',
-        'value': this.sessionCookieValue,
+        'value': this.options.sessionCookieValue,
         'domain': '.www.linkedin.com'
       })
 
@@ -363,6 +368,7 @@ class LinkedInProfileScraper {
       await this.close();
 
       statusLog(logSection, 'An error occurred during page setup.')
+      statusLog(logSection, err.message)
 
       throw err
     }
@@ -469,7 +475,7 @@ class LinkedInProfileScraper {
     // If we get redirect to /feed, we are logged in
     await page.goto('https://www.linkedin.com/login', {
       waitUntil: 'networkidle2',
-      timeout: this.timeout
+      timeout: this.options.timeout
     })
 
     const url = page.url()
@@ -517,7 +523,7 @@ class LinkedInProfileScraper {
         // Use "networkidl2" here and not "domcontentloaded". 
         // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
         waitUntil: 'networkidle2',
-        timeout: this.timeout
+        timeout: this.options.timeout
       });
 
       statusLog(logSection, 'LinkedIn profile page loaded!', scraperSessionId)
@@ -541,11 +547,16 @@ class LinkedInProfileScraper {
       statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
       for (const buttonSelector of expandButtonsSelectors) {
-        if (await page.$(buttonSelector) !== null) {
-          statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-          await page.click(buttonSelector);
+        try {
+          if (await page.$(buttonSelector) !== null) {
+            statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
+            await page.click(buttonSelector);
+          }
+        } catch (err) {
+          statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
         }
       }
+      
 
       // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
       await page.waitFor(100);
@@ -557,8 +568,12 @@ class LinkedInProfileScraper {
 
         for (const button of buttons) {
           if (button) {
-            statusLog(logSection, `Clicking button ${seeMoreButtonSelector}`, scraperSessionId)
-            await button.click()
+            try {
+              statusLog(logSection, `Clicking button ${seeMoreButtonSelector}`, scraperSessionId)
+              await button.click()
+            } catch (err) {
+              statusLog(logSection, `Could not find or click see more button selector "${button}". So we skip that one.`, scraperSessionId)
+            }
           }
         }
       }
@@ -820,7 +835,7 @@ class LinkedInProfileScraper {
 
       statusLog(logSection, `Done! Returned profile details for: ${profileUrl}`, scraperSessionId)
 
-      if (!this.keepAlive) {
+      if (!this.options.keepAlive) {
         statusLog(logSection, 'Not keeping the session alive.')
 
         await this.close(page)
