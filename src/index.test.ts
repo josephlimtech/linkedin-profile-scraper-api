@@ -1,4 +1,4 @@
-import LinkedInProfileScraper from './index'
+import { LinkedInProfileScraper } from './index'
 
 const defaultOptions = {
   headless: true,
