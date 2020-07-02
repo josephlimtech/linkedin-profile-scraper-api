@@ -161,7 +161,7 @@ async function autoScroll(page: Page) {
   });
 }
 
-class LinkedInProfileScraper {
+export class LinkedInProfileScraper {
   readonly options: ScraperOptions = {
     sessionCookieValue: '',
     keepAlive: false,
@@ -863,6 +863,3 @@ class LinkedInProfileScraper {
     }
   }
 }
-
-export default LinkedInProfileScraper;
-module.exports = LinkedInProfileScraper;

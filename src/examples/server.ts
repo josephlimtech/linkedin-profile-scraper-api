@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 import express from 'express';
-import LinkedInProfileScraper from '../index';
+import { LinkedInProfileScraper } from '../index';
 
 const app = express();
 
