@@ -162,7 +162,7 @@ async function autoScroll(page: Page) {
 }
 
 class LinkedInProfileScraper {
-  private readonly options: ScraperOptions = {
+  readonly options: ScraperOptions = {
     sessionCookieValue: '',
     keepAlive: false,
     timeout: 10000,
@@ -199,10 +199,7 @@ class LinkedInProfileScraper {
       throw new Error('Error during setup. Option "headless" needs to be a boolean.');
     }
 
-    this.options = {
-      ...this.options,
-      ...userDefinedOptions
-    };
+    this.options = Object.assign(this.options, userDefinedOptions);
 
     statusLog(logSection, `Using options: ${JSON.stringify(this.options)}`);
   }
