@@ -25,7 +25,11 @@ In order to scrape LinkedIn profiles, you need to make sure the scraper is logge
 
 ## Usage
 ```typescript
-import LinkedInProfileScraper from 'linkedin-profile-scraper';
+// TypeScript
+import { LinkedInProfileScraper } from 'linkedin-profile-scraper';
+
+// Plain Javascript
+// const { LinkedInProfileScraper } = require('linkedin-profile-scraper')
 
 (async() => {
   const scraper = new LinkedInProfileScraper({

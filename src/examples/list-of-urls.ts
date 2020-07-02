@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-import LinkedInProfileScraper from '../index';
+import { LinkedInProfileScraper } from '../index';
 
 (async () => {
   const scraper = new LinkedInProfileScraper({
