@@ -277,8 +277,6 @@ export class LinkedInProfileScraper {
       // Kill Puppeteer
       await this.close();
 
-      console.log(err.name === 'SessionExpired')
-
       statusLog(logSection, 'An error occurred during setup.')
 
       throw err
