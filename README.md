@@ -16,7 +16,7 @@ This scraper will extract publicly available data:
 All dates are formatted to a generic format.
 
 ## Getting started
-In order to scrape LinkedIn profiles, you need to make sure the scraper is logged in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
+In order to scrape LinkedIn profiles, you need to make sure the scraper is logged-in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
 1. Create a new account on LinkedIn, or use one you already have
 2. Login to that account using your browser
@@ -75,7 +75,7 @@ You should obtain a new `li_at` cookie value from the LinkedIn.com website when 
     console.log(result)
   } catch (err) {
     if (err.name === 'SessionExpired) {
-      // Do something when the scraper notifies you it's not logged in anymore
+      // Do something when the scraper notifies you it's not logged-in anymore
     }
   }
 })()
@@ -335,11 +335,11 @@ You should obtain a new `li_at` cookie value from the LinkedIn.com website when 
 ```
 
 ### About using the session cookie
-This module uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged in. I did this because LinkedIn has security measures by blocking login requests from unknown locations or requiring you to fill in Captcha's upon login. So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
+This module uses the session cookie of a succesfull login into LinkedIn, instead of an e-mail and password to set you logged-in. I did this because LinkedIn has security measures by blocking login requests from unknown locations or requiring you to fill in Captcha's upon login. So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
 
 So, using a session cookie is the most reliable way that I currently know.
 
-You probably need to follow the setup steps when the scraper logs show it's not logged in anymore.
+You probably need to follow the setup steps when the scraper logs show it's not logged-in anymore.
 
 ### About the performance
 - Upon start the module will open a headless browser session using Chromium. That session could be kept alive using the `keepAlive` option. Chromium uses about 75MB memory when in idle.
