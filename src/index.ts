@@ -188,11 +188,11 @@ export class LinkedInProfileScraper {
     }
 
     if (userDefinedOptions.keepAlive !== undefined && typeof userDefinedOptions.keepAlive !== 'boolean') {
-      throw new Error('Error during setup. userDefinedOptions "keepAlive" needs to be a number.');
+      throw new Error('Error during setup. Option "keepAlive" needs to be a boolean.');
     }
    
     if (userDefinedOptions.timeout !== undefined && typeof userDefinedOptions.timeout !== 'number') {
-      throw new Error('Error during setup. userDefinedOptions "timeout" needs to be a number.');
+      throw new Error('Error during setup. Option "timeout" needs to be a number.');
     }
     
     if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
