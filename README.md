@@ -54,6 +54,29 @@ Set `keepAlive` to `true` to keep Puppeteer running in the background for faster
 
 By default the scraper will close after a successful scrape. Freeing up your memory.
 
+## Detect when session is expired
+Known sessions could expire after some time. This usually happens when you not use LinkedIn for a while. The scraper can notify you about this specifically, so can act upon that.
+
+```typescript
+(async() => {
+  try {
+    const scraper = new LinkedInProfileScraper({
+      sessionCookieValue: 'LI_AT_COOKIE_VALUE'
+    });
+
+    await scraper.setup()
+
+    const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
+  
+    console.log(result)
+  } catch (err) {
+    if (err.name === 'SessionExpired) {
+      // Do something when the scraper notifies you it's not logged in anymore
+    }
+  }
+})()
+```
+
 ## Example response
 
 ```json
