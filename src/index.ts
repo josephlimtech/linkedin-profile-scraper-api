@@ -485,7 +485,7 @@ export class LinkedInProfileScraper {
     if (isLoggedIn) {
       statusLog(logSection, 'All good. We are still logged in.')
     } else {
-      const errorMessage = 'Bad news. We are not logged in. Session is expired or our check to see if we are loggedin is not correct anymore.';
+      const errorMessage = 'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
       statusLog(logSection, errorMessage)
       throw new Error(errorMessage)
     }
