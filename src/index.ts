@@ -4,6 +4,7 @@ import treeKill from 'tree-kill';
 import blockedHostsList from './blocked-hosts';
 
 import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog, getHostname } from './utils'
+import { SessionExpired } from './errors';
 
 export interface Location {
   city: string | null;
@@ -276,6 +277,8 @@ export class LinkedInProfileScraper {
       // Kill Puppeteer
       await this.close();
 
+      console.log(err.name === 'SessionExpired')
+
       statusLog(logSection, 'An error occurred during setup.')
 
       throw err
@@ -487,7 +490,7 @@ export class LinkedInProfileScraper {
     } else {
       const errorMessage = 'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
       statusLog(logSection, errorMessage)
-      throw new Error(errorMessage)
+      throw new SessionExpired(errorMessage)
     }
   };
 
