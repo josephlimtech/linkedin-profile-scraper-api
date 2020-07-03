@@ -173,30 +173,31 @@ export class LinkedInProfileScraper {
   private browser: Browser | null = null;
 
   constructor(userDefinedOptions: ScraperUserDefinedOptions) {
-    const logSection = 'constructing'
+    const logSection = 'constructing';
+    const errorPrefix = 'Error during setup.';
 
     if (!userDefinedOptions.sessionCookieValue) {
-      throw new Error('Error during setup. Option "sessionCookieValue" is required.');
+      throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
     }
     
     if (userDefinedOptions.sessionCookieValue && typeof userDefinedOptions.sessionCookieValue !== 'string') {
-      throw new Error('Error during setup. Option "sessionCookieValue" needs to be a string.');
+      throw new Error(`${errorPrefix} Option "sessionCookieValue" needs to be a string.`);
     }
     
     if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
-      throw new Error('Error during setup. Option "userAgent" needs to be a string.');
+      throw new Error(`${errorPrefix} Option "userAgent" needs to be a string.`);
     }
 
     if (userDefinedOptions.keepAlive !== undefined && typeof userDefinedOptions.keepAlive !== 'boolean') {
-      throw new Error('Error during setup. Option "keepAlive" needs to be a boolean.');
+      throw new Error(`${errorPrefix} Option "keepAlive" needs to be a boolean.`);
     }
    
     if (userDefinedOptions.timeout !== undefined && typeof userDefinedOptions.timeout !== 'number') {
-      throw new Error('Error during setup. Option "timeout" needs to be a number.');
+      throw new Error(`${errorPrefix} Option "timeout" needs to be a number.`);
     }
     
     if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
-      throw new Error('Error during setup. Option "headless" needs to be a boolean.');
+      throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
     }
 
     this.options = Object.assign(this.options, userDefinedOptions);
