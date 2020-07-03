@@ -57,7 +57,7 @@ By default the scraper will close after a successful scrape. Freeing up your mem
 ## Detect when session is expired
 Known LinkedIn sessions could expire after some time. This usually happens when you do not use LinkedIn for a while. The scraper can notify you about this specifically, so can act upon that.
 
-You should obtain a new `li_at` cookie value from the LinkedIn.com website when this error shows. Follow the Getting started steps above in this readme.
+You should obtain a new `li_at` cookie value from the LinkedIn.com website when this error shows and update the `sessionCookieValue` with that new value. Follow the Getting started steps above in this readme.
 
 ```typescript
 (async() => {
