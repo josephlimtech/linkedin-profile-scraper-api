@@ -76,7 +76,7 @@ You should obtain a new `li_at` cookie value from the LinkedIn.com website when 
   
     console.log(result)
   } catch (err) {
-    if (err.name === 'SessionExpired) {
+    if (err.name === 'SessionExpired') {
       // Do something when the scraper notifies you it's not logged-in anymore
     }
   }
