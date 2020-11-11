@@ -133,6 +133,20 @@ interface ScraperUserDefinedOptions {
    * Default: `true`
    */
   headless?: boolean;
+  /**
+   *  User defined proxy
+   * 
+   * Default: 'direct://
+   */
+  proxy?: string;
+  /**
+   *  User LinkedIn username
+   */
+  username?: string;
+  /**
+   *  User LinkedIn password
+   */
+  password?: string;
 }
 
 interface ScraperOptions {
@@ -141,6 +155,9 @@ interface ScraperOptions {
   userAgent: string;
   timeout: number;
   headless: boolean;
+  proxy: string;
+  username: string;
+  password: string;
 }
 
 async function autoScroll(page: Page) {
@@ -168,14 +185,19 @@ export class LinkedInProfileScraper {
     keepAlive: false,
     timeout: 10000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-    headless: true
+    headless: true,
+    proxy: "",
+    username: "",
+    password: ""
   }
 
   private browser: Browser | null = null;
+  private cookie : string;
 
   constructor(userDefinedOptions: ScraperUserDefinedOptions) {
     const logSection = 'constructing';
     const errorPrefix = 'Error during setup.';
+    this.cookie = this.options.sessionCookieValue
 
     if (!userDefinedOptions.sessionCookieValue) {
       throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
@@ -200,7 +222,18 @@ export class LinkedInProfileScraper {
     if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
       throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
     }
+    
+    if (userDefinedOptions.proxy !== undefined && typeof userDefinedOptions.proxy !== 'string') {
+      throw new Error(`${errorPrefix} Option "proxy" needs to be a string.`);
+    }
 
+    if (userDefinedOptions.username !== undefined && typeof userDefinedOptions.username !== 'string') {
+      throw new Error(`${errorPrefix} Option "username" needs to be a string.`);
+    }
+
+    if (userDefinedOptions.password !== undefined && typeof userDefinedOptions.password !== 'string') {
+      throw new Error(`${errorPrefix} Option "password" needs to be a string.`);
+    }
     this.options = Object.assign(this.options, userDefinedOptions);
 
     statusLog(logSection, `Using options: ${JSON.stringify(this.options)}`);
@@ -219,9 +252,9 @@ export class LinkedInProfileScraper {
         headless: this.options.headless,
         args: [
           ...(this.options.headless ? '---single-process' : '---start-maximized'),
+          ...(!!this.options.proxy ?  `--proxy-server=${this.options.proxy}` : "--proxy-server='direct://"),
           '--no-sandbox',
           '--disable-setuid-sandbox',
-          "--proxy-server='direct://",
           '--proxy-bypass-list=*',
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
@@ -268,9 +301,9 @@ export class LinkedInProfileScraper {
         timeout: this.options.timeout
       })
 
-      statusLog(logSection, 'Puppeteer launched!')
-
-      await this.checkIfLoggedIn();
+    statusLog(logSection, 'Puppeteer launched!')
+    
+    await this.checkIfLoggedIn();
 
       statusLog(logSection, 'Done!')
     } catch (err) {
@@ -349,11 +382,11 @@ export class LinkedInProfileScraper {
         height: 720
       })
 
-      statusLog(logSection, `Setting session cookie using cookie: ${process.env.LINKEDIN_SESSION_COOKIE_VALUE}`)
+      statusLog(logSection, `Setting session cookie using cookie: ${this.cookie}`)
 
       await page.setCookie({
         'name': 'li_at',
-        'value': this.options.sessionCookieValue,
+        'value': this.cookie,
         'domain': '.www.linkedin.com'
       })
 
@@ -462,7 +495,7 @@ export class LinkedInProfileScraper {
   /**
    * Simple method to check if the session is still active.
    */
-  public checkIfLoggedIn = async () => {
+  public checkIfLoggedIn = async (retry = true) => {
     const logSection = 'checkIfLoggedIn';
 
     const page = await this.createPage();
@@ -481,15 +514,31 @@ export class LinkedInProfileScraper {
 
     const isLoggedIn = !url.endsWith('/login')
 
-    await page.close();
-
     if (isLoggedIn) {
       statusLog(logSection, 'All good. We are still logged in.')
     } else {
-      const errorMessage = 'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
-      statusLog(logSection, errorMessage)
-      throw new SessionExpired(errorMessage)
+      if (retry){
+        statusLog(logSection, 'Try to login for get new cookie session.')
+        // Login
+        await page.type('#username', this.options.username);
+        await page.type('#password', this.options.password);
+        await page.click('.login__form_action_container ');
+        await page.waitForNavigation();
+        // Get cookies
+        const cookies = await page.cookies();
+        const li_at = cookies.find(cookie => cookie.name == "li_at");
+        if(li_at){
+          this.cookie = li_at.value
+        }  
+        await this.checkIfLoggedIn(false);
+      }else{
+        const errorMessage = 'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
+        statusLog(logSection, errorMessage)
+        throw new SessionExpired(errorMessage)
+      }
     }
+
+    await page.close();
   };
 
   /**
@@ -530,7 +579,7 @@ export class LinkedInProfileScraper {
       statusLog(logSection, 'Getting all the LinkedIn profile data by scrolling the page to the bottom, so all the data gets loaded into the page...', scraperSessionId)
 
       await autoScroll(page);
-
+    
       statusLog(logSection, 'Parsing data...', scraperSessionId)
 
       // Only click the expanding buttons when they exist
@@ -581,7 +630,7 @@ export class LinkedInProfileScraper {
 
       const rawUserProfileData: RawProfile = await page.evaluate(() => {
         const profileSection = document.querySelector('.pv-top-card')
-
+      
         const url = window.location.href
 
         const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
