@@ -1,10 +1,10 @@
-import puppeteer, { Page, Browser } from 'puppeteer'
+import puppeteer, {Page, Browser} from 'puppeteer'
 import treeKill from 'tree-kill';
 
 import blockedHostsList from './blocked-hosts';
 
-import { getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog, getHostname } from './utils'
-import { SessionExpired } from './errors';
+import {getDurationInDays, formatDate, getCleanText, getLocationFromText, statusLog, getHostname} from './utils'
+import {SessionExpired} from './errors';
 
 export interface Location {
   city: string | null;
@@ -98,38 +98,38 @@ interface ScraperUserDefinedOptions {
   /**
    * The LinkedIn `li_at` session cookie value. Get this value by logging in to LinkedIn with the account you want to use for scraping.
    * Open your browser's Dev Tools and find the cookie with the name `li_at`. Use that value here.
-   * 
-   * This script uses a known session cookie of a successful login into LinkedIn, instead of an e-mail and password to set you logged in. 
+   *
+   * This script uses a known session cookie of a successful login into LinkedIn, instead of an e-mail and password to set you logged in.
    * I did this because LinkedIn has security measures by blocking login requests from unknown locations or requiring you to fill in Captcha's upon login.
-   * So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. 
+   * So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked.
    * By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
-   * 
+   *
    * You probably need to get a new session cookie value when the scraper logs show it's not logged in anymore.
    */
   sessionCookieValue: string;
   /**
    * Set to true if you want to keep the scraper session alive. This results in faster recurring scrapes.
    * But keeps your memory usage high.
-   * 
+   *
    * Default: `false`
    */
   keepAlive?: boolean;
   /**
    * Set a custom user agent if you like.
-   * 
+   *
    * Default: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36`
    */
   userAgent?: string;
   /**
-   * Use a custom timeout to set the maximum time you want to wait for the scraper 
+   * Use a custom timeout to set the maximum time you want to wait for the scraper
    * to do his job.
-   * 
+   *
    * Default: `10000` (10 seconds)
    */
   timeout?: number;
   /**
    * Start the scraper in headless mode, or not.
-   * 
+   *
    * Default: `true`
    */
   headless?: boolean;
@@ -145,7 +145,7 @@ interface ScraperOptions {
 
 async function autoScroll(page: Page) {
   await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       var totalHeight = 0;
       var distance = 500;
       var timer = setInterval(() => {
@@ -180,23 +180,28 @@ export class LinkedInProfileScraper {
     if (!userDefinedOptions.sessionCookieValue) {
       throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
     }
-    
+
+    // noinspection SuspiciousTypeOfGuard
     if (userDefinedOptions.sessionCookieValue && typeof userDefinedOptions.sessionCookieValue !== 'string') {
       throw new Error(`${errorPrefix} Option "sessionCookieValue" needs to be a string.`);
     }
-    
+
+    // noinspection SuspiciousTypeOfGuard
     if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
       throw new Error(`${errorPrefix} Option "userAgent" needs to be a string.`);
     }
 
+    // noinspection SuspiciousTypeOfGuard
     if (userDefinedOptions.keepAlive !== undefined && typeof userDefinedOptions.keepAlive !== 'boolean') {
       throw new Error(`${errorPrefix} Option "keepAlive" needs to be a boolean.`);
     }
-   
+
+    // noinspection SuspiciousTypeOfGuard
     if (userDefinedOptions.timeout !== undefined && typeof userDefinedOptions.timeout !== 'number') {
       throw new Error(`${errorPrefix} Option "timeout" needs to be a number.`);
     }
-    
+
+    // noinspection SuspiciousTypeOfGuard
     if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
       throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
     }
@@ -376,7 +381,7 @@ export class LinkedInProfileScraper {
   /**
    * Method to block know hosts that have some kind of tracking.
    * By blocking those hosts we speed up the crawling.
-   * 
+   *
    * More info: http://winhelp2002.mvps.org/hosts.htm
    */
   private getBlockedHosts = (): object => {
@@ -519,7 +524,7 @@ export class LinkedInProfileScraper {
       statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
       await page.goto(profileUrl, {
-        // Use "networkidl2" here and not "domcontentloaded". 
+        // Use "networkidl2" here and not "domcontentloaded".
         // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
         waitUntil: 'networkidle2',
         timeout: this.options.timeout
@@ -533,29 +538,11 @@ export class LinkedInProfileScraper {
 
       statusLog(logSection, 'Parsing data...', scraperSessionId)
 
-      // Only click the expanding buttons when they exist
-      const expandButtonsSelectors = [
-        '.pv-profile-section.pv-about-section .lt-line-clamp__more', // About
-        '#experience-section .pv-profile-section__see-more-inline.link', // Experience
-        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
-        '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
-      ];
-
-      const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]', '.lt-line-clamp__more[href="#"]:not(.lt-line-clamp__ellipsis--dummy)']
-
-      statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
-
-      for (const buttonSelector of expandButtonsSelectors) {
-        try {
-          if (await page.$(buttonSelector) !== null) {
-            statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-            await page.click(buttonSelector);
-          }
-        } catch (err) {
-          statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
-        }
-      }
-      
+      const seeMoreButtonsSelectors = [
+        '.pv-skills-section__additional-skills', // Skills
+        '.pv-about-section .lt-line-clamp__more', // About bio
+        '.experience-section .pv-profile-section__see-more-inline' // Experience
+      ]
 
       // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
       await page.waitFor(100);
@@ -597,14 +584,22 @@ export class LinkedInProfileScraper {
         const photo = photoElement?.getAttribute('src') || null
 
         const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
-        const description = descriptionElement?.textContent || null
+        let description = descriptionElement?.textContent
+
+        if (!description) {
+          const descriptionElements = document.querySelectorAll('.pv-about__summary-text .lt-line-clamp__line') // Is outside "profileSection"
+          description = '';
+          descriptionElements.forEach((element) => {
+            description += element.textContent + ' ';
+          })
+        }
 
         return {
           fullName,
           title,
           location,
           photo,
-          description,
+          description: description || null,
           url
         } as RawProfile
       })
@@ -765,7 +760,7 @@ export class LinkedInProfileScraper {
 
           const titleElement = node.querySelector('.pv-entity__summary-info h3');
           const title = titleElement?.textContent || null;
-          
+
           const companyElement = node.querySelector('.pv-entity__summary-info span.pv-entity__secondary-title');
           const company = companyElement?.textContent || null;
 
@@ -865,3 +860,19 @@ export class LinkedInProfileScraper {
     }
   }
 }
+
+(async () => {
+  const scraper = new LinkedInProfileScraper({
+    sessionCookieValue: 'AQEDAQCd1L4AgDvCAAABdknrcUMAAAF2bff1Q1YA0eW1xL-Z7hU-zSGst8bhKcQYkGLX2cokekG-PyFs1f7ewMfF0j3stsI_VCHBGQc9p9d18qQeVTx2AIc7BqSnCrGoN89i3nPdlyX8CingWvEuAiBI',
+    keepAlive: false
+  });
+
+// Prepare the scraper
+// Loading it in memory
+  await scraper.setup();
+
+
+  const result = await scraper.run('https://www.linkedin.com/in/prassarkar/');
+  console.log(result);
+})();
+
