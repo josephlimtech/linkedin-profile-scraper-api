@@ -1,6 +1,6 @@
 {
   "name": "@viliv/linkedin-profile-scraper",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "LinkedIn profile scraper returning structured profile data in JSON. Works in 2020.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "test": "NODE_ENV=test jest --coverage",
     "update": "npx npm-check --update",
     "release": "release-it",
-    "publishnpm": "npm publish --access public"
+    "publishnpm": "npx tsc -p tsconfig.production.json | npm publish --access public"
   },
   "author": "Yossi Kahlon / Nir Peled - forked from Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
   "repository": {
