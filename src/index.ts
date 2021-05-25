@@ -535,13 +535,16 @@ export class LinkedInProfileScraper {
 
       // Only click the expanding buttons when they exist
       const expandButtonsSelectors = [
-        '.pv-profile-section.pv-about-section .lt-line-clamp__more', // About
-        '#experience-section .pv-profile-section__see-more-inline.link', // Experience
-        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline', // Education
+        '.pv-profile-section.pv-about-section .inline-show-more-text__button.link', // About
+        '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Experience
+        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Education
         '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
       ];
 
-      const seeMoreButtonsSelectors = ['.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .lt-line-clamp__more[href="#"]', '.lt-line-clamp__more[href="#"]:not(.lt-line-clamp__ellipsis--dummy)']
+      const seeMoreButtonsSelectors = [
+        '.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .inline-show-more-text__button.link[href="#"]', 
+        '.inline-show-more-text__button.link[href="#"]:not(.lt-line-clamp__ellipsis--dummy)'
+      ]
 
       statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
@@ -584,13 +587,13 @@ export class LinkedInProfileScraper {
 
         const url = window.location.href
 
-        const fullNameElement = profileSection?.querySelector('.pv-top-card--list li:first-child')
+        const fullNameElement = profileSection?.querySelector('h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child')
         const fullName = fullNameElement?.textContent || null
 
-        const titleElement = profileSection?.querySelector('h2')
+        const titleElement = profileSection?.querySelector('div.text-body-medium.break-words:first-child')
         const title = titleElement?.textContent || null
 
-        const locationElement = profileSection?.querySelector('.pv-top-card--list.pv-top-card--list-bullet.mt1 li:first-child')
+        const locationElement = profileSection?.querySelector('span.text-body-small.inline.t-black--light.break-words:first-child')
         const location = locationElement?.textContent || null
 
         const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
