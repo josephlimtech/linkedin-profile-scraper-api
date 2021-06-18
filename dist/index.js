@@ -44,8 +44,7 @@ class LinkedInProfileScraper {
                     utils_1.statusLog(logSection, 'modified_module is used');
                     utils_1.statusLog(
                         logSection,
-                        `Launching puppeteer in the ${
-                            this.options.headless ? 'background' : 'foreground'
+                        `Launching puppeteer in the ${this.options.headless ? 'background' : 'foreground'
                         }...`,
                     );
                     this.browser = yield puppeteer_1.default.launch({
@@ -143,8 +142,7 @@ class LinkedInProfileScraper {
                     const blockedResourcesByHost = ['script', 'xhr', 'fetch', 'document'];
                     utils_1.statusLog(
                         logSection,
-                        `Should block scripts from ${
-                            Object.keys(blockedHosts).length
+                        `Should block scripts from ${Object.keys(blockedHosts).length
                         } unwanted hosts to speed up the crawling.`,
                     );
                     yield page.setRequestInterception(true);
@@ -383,8 +381,8 @@ class LinkedInProfileScraper {
                             profileSection === null || profileSection === void 0
                                 ? void 0
                                 : profileSection.querySelector(
-                                      'h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child',
-                                  );
+                                    'h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child',
+                                );
                         const fullName =
                             (fullNameElement === null || fullNameElement === void 0
                                 ? void 0
@@ -401,8 +399,8 @@ class LinkedInProfileScraper {
                             profileSection === null || profileSection === void 0
                                 ? void 0
                                 : profileSection.querySelector(
-                                      'span.text-body-small.inline.t-black--light.break-words:first-child',
-                                  );
+                                    'span.text-body-small.inline.t-black--light.break-words:first-child',
+                                );
                         const location =
                             (locationElement === null || locationElement === void 0
                                 ? void 0
@@ -463,7 +461,7 @@ class LinkedInProfileScraper {
                                 );
                                 const employmentType =
                                     (employmentTypeElement === null ||
-                                    employmentTypeElement === void 0
+                                        employmentTypeElement === void 0
                                         ? void 0
                                         : employmentTypeElement.textContent) || null;
                                 const companyElement = node.querySelector(
@@ -471,14 +469,14 @@ class LinkedInProfileScraper {
                                 );
                                 const companyElementClean =
                                     companyElement &&
-                                    (companyElement === null || companyElement === void 0
-                                        ? void 0
-                                        : companyElement.querySelector('span'))
+                                        (companyElement === null || companyElement === void 0
+                                            ? void 0
+                                            : companyElement.querySelector('span'))
                                         ? (companyElement === null || companyElement === void 0
-                                              ? void 0
-                                              : companyElement.removeChild(
-                                                    companyElement.querySelector('span'),
-                                                )) && companyElement
+                                            ? void 0
+                                            : companyElement.removeChild(
+                                                companyElement.querySelector('span'),
+                                            )) && companyElement
                                         : companyElement || null;
                                 const company =
                                     (companyElementClean === null || companyElementClean === void 0
@@ -524,16 +522,113 @@ class LinkedInProfileScraper {
                                     (locationElement === null || locationElement === void 0
                                         ? void 0
                                         : locationElement.textContent) || null;
-                                data.push({
-                                    title,
-                                    company,
-                                    employmentType,
-                                    location,
-                                    startDate,
-                                    endDate,
-                                    endDateIsPresent,
-                                    description,
-                                });
+
+                                const jobSections = node.querySelectorAll(
+                                    'li.pv-entity__position-group-role-item',
+                                );
+                                jobRoles = [];
+
+                                console.log('+++++++++++++++job section type++++++++++++', jobSections)
+                                jobSections.forEach((role) => {
+                                    const roleN = role.querySelector(
+                                        'h3 span:not(.visually-hidden)',
+                                    );
+                                    const jobNewTi = (roleN === null || roleN === void 0
+                                        ? void 0
+                                        : roleN.textContent) || null;
+
+
+
+                                    const roledescriptionElement =
+                                        role.querySelector('.pv-entity__description');
+
+
+                                    const roledescription =
+                                        (roledescriptionElement === null || roledescriptionElement === void 0
+                                            ? void 0
+                                            : roledescriptionElement.textContent) || null;
+
+
+                                    const roledateRangeElement = role.querySelector(
+                                        '.pv-entity__date-range span:nth-child(2)',
+                                    );
+                                    const roledateRangeText =
+                                        (roledateRangeElement === null || roledateRangeElement === void 0
+                                            ? void 0
+                                            : roledateRangeElement.textContent) || null;
+                                    const rolestartDatePart =
+                                        (roledateRangeText === null || roledateRangeText === void 0
+                                            ? void 0
+                                            : roledateRangeText.split('–')[0]) || null;
+                                    const rolestartDate =
+                                        (rolestartDatePart === null || rolestartDatePart === void 0
+                                            ? void 0
+                                            : rolestartDatePart.trim()) || null;
+                                    const roleendDatePart =
+                                        (roledateRangeText === null || roledateRangeText === void 0
+                                            ? void 0
+                                            : roledateRangeText.split('–')[1]) || null;
+                                    const roleendDateIsPresent =
+                                        (roleendDatePart === null || roleendDatePart === void 0
+                                            ? void 0
+                                            : roleendDatePart.trim().toLowerCase()) === 'present' || false;
+                                    const roleendDate =
+                                        roleendDatePart && !roleendDateIsPresent
+                                            ? roleendDatePart.trim()
+                                            : 'Present';
+                                    const rolelocationElement = role.querySelector(
+                                        '.pv-entity__location span:nth-child(2)',
+                                    );
+                                    const rolelocation =
+                                        (rolelocationElement === null || rolelocationElement === void 0
+                                            ? void 0
+                                            : rolelocationElement.textContent) || null;
+
+
+                                    jobRoles.push({
+                                        titles: jobNewTi,
+                                        StartDate: rolestartDate,
+                                        EndDate: roleendDate,
+                                        location: rolelocation,
+                                        description: roledescription
+                                    })
+                                })
+
+                                const companyWithRole = node.querySelector(
+                                    '.pv-entity__company-summary-info span:not(.visually-hidden)',
+                                );
+                                const companyNewName = (companyWithRole === null || companyWithRole === void 0
+                                    ? void 0
+                                    : companyWithRole.textContent) || null;
+
+                                if (jobRoles.length != 0) {
+                                    jobRoles.map((k) => {
+                                        data.push({
+                                            title: k.titles,
+                                            company: companyNewName,
+                                            employmentType,
+                                            location: k.location,
+                                            startDate: k.StartDate,
+                                            endDate: k.EndDate,
+                                            endDateIsPresent,
+                                            description: k.description,
+                                            // roles: jobRoles
+                                        });
+                                    })
+                                }
+                                else {
+                                    data.push({
+                                        title,
+                                        company,
+                                        employmentType,
+                                        location,
+                                        startDate,
+                                        endDate,
+                                        endDateIsPresent,
+                                        description,
+                                        roles: jobRoles
+                                    });
+                                }
                             }
                             return data;
                         },
@@ -758,11 +853,11 @@ class LinkedInProfileScraper {
                                         : null,
                                     endorsementCount: endorsementCount
                                         ? parseInt(
-                                              ((_b = endorsementCount.textContent) === null ||
-                                              _b === void 0
-                                                  ? void 0
-                                                  : _b.trim()) || '0',
-                                          )
+                                            ((_b = endorsementCount.textContent) === null ||
+                                                _b === void 0
+                                                ? void 0
+                                                : _b.trim()) || '0',
+                                        )
                                         : 0,
                                 };
                             });
