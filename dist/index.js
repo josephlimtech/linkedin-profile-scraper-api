@@ -322,6 +322,7 @@ class LinkedInProfileScraper {
                     const seeMoreButtonsSelectors = [
                         '.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .inline-show-more-text__button.link[href="#"]',
                         '.inline-show-more-text__button.link[href="#"]:not(.lt-line-clamp__ellipsis--dummy)',
+                        'div.pv-profile-section__position-group-pager.pv-profile-section__actions-inline.ember-view button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle.artdeco-button.artdeco-button--tertiary.artdeco-button--muted'
                     ];
                     utils_1.statusLog(
                         logSection,
@@ -526,10 +527,77 @@ class LinkedInProfileScraper {
                                 const jobSections = node.querySelectorAll(
                                     'li.pv-entity__position-group-role-item',
                                 );
+                                const jobSectionsFading = node.querySelectorAll(
+                                    'li.pv-entity__position-group-role-item-fading-timeline',
+                                );
                                 jobRoles = [];
 
                                 console.log('+++++++++++++++job section type++++++++++++', jobSections)
                                 jobSections.forEach((role) => {
+                                    const roleN = role.querySelector(
+                                        'h3 span:not(.visually-hidden)',
+                                    );
+                                    const jobNewTi = (roleN === null || roleN === void 0
+                                        ? void 0
+                                        : roleN.textContent) || null;
+
+
+
+                                    const roledescriptionElement =
+                                        role.querySelector('.pv-entity__description');
+
+
+                                    const roledescription =
+                                        (roledescriptionElement === null || roledescriptionElement === void 0
+                                            ? void 0
+                                            : roledescriptionElement.textContent) || null;
+
+
+                                    const roledateRangeElement = role.querySelector(
+                                        '.pv-entity__date-range span:nth-child(2)',
+                                    );
+                                    const roledateRangeText =
+                                        (roledateRangeElement === null || roledateRangeElement === void 0
+                                            ? void 0
+                                            : roledateRangeElement.textContent) || null;
+                                    const rolestartDatePart =
+                                        (roledateRangeText === null || roledateRangeText === void 0
+                                            ? void 0
+                                            : roledateRangeText.split('–')[0]) || null;
+                                    const rolestartDate =
+                                        (rolestartDatePart === null || rolestartDatePart === void 0
+                                            ? void 0
+                                            : rolestartDatePart.trim()) || null;
+                                    const roleendDatePart =
+                                        (roledateRangeText === null || roledateRangeText === void 0
+                                            ? void 0
+                                            : roledateRangeText.split('–')[1]) || null;
+                                    const roleendDateIsPresent =
+                                        (roleendDatePart === null || roleendDatePart === void 0
+                                            ? void 0
+                                            : roleendDatePart.trim().toLowerCase()) === 'present' || false;
+                                    const roleendDate =
+                                        roleendDatePart && !roleendDateIsPresent
+                                            ? roleendDatePart.trim()
+                                            : 'Present';
+                                    const rolelocationElement = role.querySelector(
+                                        '.pv-entity__location span:nth-child(2)',
+                                    );
+                                    const rolelocation =
+                                        (rolelocationElement === null || rolelocationElement === void 0
+                                            ? void 0
+                                            : rolelocationElement.textContent) || null;
+
+
+                                    jobRoles.push({
+                                        titles: jobNewTi,
+                                        StartDate: rolestartDate,
+                                        EndDate: roleendDate,
+                                        location: rolelocation,
+                                        description: roledescription
+                                    })
+                                })
+                                jobSectionsFading.forEach((role) => {
                                     const roleN = role.querySelector(
                                         'h3 span:not(.visually-hidden)',
                                     );
