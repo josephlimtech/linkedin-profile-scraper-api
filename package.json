@@ -12,11 +12,6 @@
     "update": "npx npm-check --update",
     "release": "release-it"
   },
-  "author": "Jordy van den Aardweg <jordyvandenaardweg@gmail.com> (https://github.com/jvandenaardweg)",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jvandenaardweg/linkedin-profile-scraper.git"
-  },
   "license": "ISC",
   "dependencies": {
     "all-the-cities": "^3.1.0",
