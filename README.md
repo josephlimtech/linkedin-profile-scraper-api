@@ -1,5 +1,3 @@
-### 👨‍💻  I'm available for hire as a freelancer: [Say hi on LinkedIn](https://www.linkedin.com/in/jvandenaardweg/)
-------
 # LinkedIn Profile Scraper
 LinkedIn profile scraper using Puppeteer headless browser. So you can use it on a server. Returns structured data in JSON format. Works in 2020.
 
@@ -43,13 +41,11 @@ import { LinkedInProfileScraper } from 'linkedin-profile-scraper';
   // Loading it in memory
   await scraper.setup()
 
-  const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
+  const result = await scraper.run('https://www.linkedin.com/in/someone/')
   
   console.log(result)
 })()
 ```
-
-See [src/examples](https://github.com/jvandenaardweg/linkedin-profile-scraper/tree/master/src/examples) for more examples.
 
 See [Example response](#example-response) for an example response.
 
@@ -72,7 +68,7 @@ You should obtain a new `li_at` cookie value from the LinkedIn.com website when 
 
     await scraper.setup()
 
-    const result = await scraper.run('https://www.linkedin.com/in/jvandenaardweg/')
+    const result = await scraper.run('https://www.linkedin.com/in/someone/')
   
     console.log(result)
   } catch (err) {
