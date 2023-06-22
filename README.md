@@ -15,6 +15,22 @@ This scraper will extract publicly available data:
 
 All dates are formatted to a generic format.
 
+## Commercial Alternative: Proxycurl LinkedIn APIs
+
+[![Proxycurl APIs enrich people and company profiles with structured data](https://raw.githubusercontent.com/josephlimtech/linkedin-profile-scraper/master/Proxycurl-Logo.png)](https://nubela.co/proxycurl?utm_campaign=influencer_marketing&utm_source=github&utm_medium=social&utm_content=josephlimtech)
+
+[Scrape public LinkedIn profile data at scale](https://nubela.co/proxycurl?utm_campaign=influencer_marketing&utm_source=github&utm_medium=social&utm_content=josephlimtech) with Proxycurl APIs.
+
+- Scraping Public profiles are battle tested in court in HiQ VS LinkedIn case.
+- GDPR, CCPA, SOC2 compliant
+- High rate limit - 300 requests/minute
+- Fast - APIs respond in ~2s
+- Fresh data - 88% of data is scraped real-time, other 12% are not older than 29 days
+- High accuracy
+- Tons of data points returned per profile
+
+Built for developers, by developers.
+
 ## Getting started
 In order to scrape LinkedIn profiles, you need to make sure the scraper is logged-in into LinkedIn. For that you need to find your account's session cookie. I suggest creating a new account on LinkedIn and enable all the privacy options so people don't see you visiting their profiles when using the scraper.
 
