@@ -17,7 +17,9 @@ All dates are formatted to a generic format.
 
 ## Commercial Alternative: Proxycurl LinkedIn APIs
 
-[![Proxycurl APIs enrich people and company profiles with structured data](https://raw.githubusercontent.com/josephlimtech/linkedin-profile-scraper/master/Proxycurl-Logo.png)](https://nubela.co/proxycurl?utm_campaign=influencer_marketing&utm_source=github&utm_medium=social&utm_content=josephlimtech)
+<a href="https://nubela.co/proxycurl?utm_campaign=influencer_marketing&utm_source=github&utm_medium=social&utm_content=josephlimtech">
+  <img src="https://github.com/josephlimtech/linkedin-profile-scraper-api/blob/master/Proxycurl_scrape_LinkedIn.png" width="450px" height="100%" alt="Proxycurl APIs enrich people and company profiles with structured data" />
+</a><br><br/>
 
 [Scrape public LinkedIn profile data at scale](https://nubela.co/proxycurl?utm_campaign=influencer_marketing&utm_source=github&utm_medium=social&utm_content=josephlimtech) with Proxycurl APIs.
 
